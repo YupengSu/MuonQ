@@ -1,0 +1,11 @@
+name: muonq
+args:
+  lr: 0.001
+  weight_decay: 0.1
+  polar_method: Keller
+  ns_steps: 5
+  qbit: 4
+  gran: tensor
+  compand: True
+  norm: True
+  rank: 16

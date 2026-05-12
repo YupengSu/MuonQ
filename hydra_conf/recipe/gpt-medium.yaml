@@ -1,0 +1,25 @@
+training_params:
+  # tokens_processed must be divisible by (world size * batch size * token length)
+  tokens_processed: 2097152 # 2^19
+  batch_size: 4
+  num_epochs: 1
+  context_length: 4096
+  gradnorm: 1.0
+  tensorcore_precision: high   #Can be highest, high, or medium
+  autocast: True
+  mixed_precision: bfloat16
+  compile: True
+
+model:
+  model_type: gpt
+  block_size: 4096
+  n_embd: 1024
+  n_layer: 24
+  n_head: 16
+  vocab_size: 50257
+  flash_attention: True
+
+dataset:
+  name: "fineweb10B"
+  tokenizer: "gpt2"
+  total_tokens_B: 5

@@ -1,0 +1,28 @@
+defaults:
+  - recipe: gpt-small
+  - hydra: default
+  - optimizer_params: muonq
+  - _self_
+
+lr_schedule:
+  name: warm-up-cosine
+  warm_up_fraction: 0.1
+
+logging_params:
+  # val_tokens_processed must be divisible by (world size * batch size * token length)
+  # If it is zero, the whole validation set is used.
+  val_tokens_processed: 8388608 #2^23
+  log_step: 50
+  val_step: 500
+  save_ckpt_step: 500
+  load_ckpt_step: 0
+  keep_last: 2
+  save_checkpoint: false
+  # Track update matrices (master process only).
+  # Saves <output_dir>/<pt_dir>/step_XXXXXXX.pt  and  <output_dir>/<csv_name>
+  var_tracking:
+    log_interval: 50        # save every 50 optimizer steps
+    pt_dir: ???             # overridden at runtime via +logging_params.var_tracking.pt_dir=<opt>
+    # log_steps: [50, 100]  # alternatively, specify exact steps (overrides log_interval)
+    # csv_name: muonq_u_variance.csv  # (default: <optimizer_name>_u_variance.csv)
+

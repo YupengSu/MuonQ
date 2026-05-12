@@ -1,0 +1,8 @@
+numpy
+transformers
+datasets
+tiktoken
+hydra-core
+omegaconf
+wandb
+tqdm

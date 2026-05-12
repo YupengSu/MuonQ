@@ -1,0 +1,4 @@
+name: sgd
+args:
+  lr: 0.01
+  momentum: 0.95

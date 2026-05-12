@@ -1,0 +1,7 @@
+name: muon
+args:
+  lr: 0.06
+  weight_decay: 0.1
+  polar_method: Keller
+  ns_steps: 5
+
