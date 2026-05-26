@@ -6,7 +6,7 @@ defaults:
 
 lr_schedule:
   name: warm-up-cosine
-  warm_up_fraction: 0.1
+  warm_up_fraction: 0.01
 
 logging_params:
   # val_tokens_processed must be divisible by (world size * batch size * token length)
