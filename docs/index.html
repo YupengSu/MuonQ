@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MuonQ: Enhancing Low-Bit Muon Quantization via Directional Fidelity Optimization</title>
+<meta name="description" content="MuonQ is a pure 4-bit training framework for the Muon optimizer, built on directional fidelity optimization. It matches full-precision Muon quality while cutting optimizer-state memory by up to 7.3x. CoLM 2026.">
+<meta name="theme-color" content="#2E39C0">
+<link rel="icon" href="static/favicon.svg" type="image/svg+xml">
+<link rel="canonical" href="https://yupengsu.github.io/MuonQ/">
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="MuonQ: Enhancing Low-Bit Muon Quantization via Directional Fidelity Optimization">
+<meta property="og:description" content="Pure 4-bit quantization of the Muon optimizer, up to 7.3x less optimizer-state memory at full-precision quality. CoLM 2026.">
+<meta property="og:url" content="https://yupengsu.github.io/MuonQ/">
+<meta property="og:image" content="https://yupengsu.github.io/MuonQ/static/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MuonQ: Low-Bit Muon Quantization via Directional Fidelity Optimization">
+<meta name="twitter:description" content="Pure 4-bit Muon optimizer states, up to 7.3x less memory at full-precision quality. CoLM 2026.">
+<meta name="twitter:image" content="https://yupengsu.github.io/MuonQ/static/og-image.png">
+<!-- Google Scholar -->
+<meta name="citation_title" content="MuonQ: Enhancing Low-Bit Muon Quantization via Directional Fidelity Optimization">
+<meta name="citation_author" content="Su, Yupeng">
+<meta name="citation_author" content="Zhang, Ruijie">
+<meta name="citation_author" content="Liu, Ziyue">
+<meta name="citation_author" content="Zhao, Yequan">
+<meta name="citation_author" content="Zhang, Zheng">
+<meta name="citation_conference_title" content="Conference on Language Modeling (CoLM)">
+<meta name="citation_publication_date" content="2026">
+<meta name="citation_arxiv_id" content="2605.11396">
+<meta name="citation_pdf_url" content="https://arxiv.org/pdf/2605.11396">
+<style>
+  :root{
+    --paper:#F6F7F9; --surface:#FFFFFF; --ink:#14171F; --muted:#5A6472;
+    --hair:#E2E6EC; --accent:#2E39C0; --accent-soft:#EEEFFB; --ours:#E4572E; --ours-soft:#FBECE6;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:"SF Mono","JetBrains Mono","Fira Code",ui-monospace,Menlo,Consolas,monospace;
+    --w:820px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+    font-size:17px;line-height:1.68;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  .col{max-width:var(--w);margin:0 auto;padding:0 24px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  /* ---------- sticky nav ---------- */
+  nav.top{position:sticky;top:0;z-index:50;background:rgba(246,247,249,.82);
+    -webkit-backdrop-filter:saturate(160%) blur(10px);backdrop-filter:saturate(160%) blur(10px);
+    border-bottom:1px solid var(--hair)}
+  nav.top .inner{max-width:var(--w);margin:0 auto;padding:11px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+  nav.top .nm{font-family:var(--serif);font-weight:600;font-size:19px;letter-spacing:-.02em;color:var(--ink)}
+  nav.top .nm:hover{text-decoration:none}
+  nav.top .nm .q{color:var(--accent)}
+  nav.top .nl{display:flex;gap:22px;font-size:14px}
+  nav.top .nl a{color:var(--muted)}
+  nav.top .nl a:hover{color:var(--accent);text-decoration:none}
+  section{scroll-margin-top:62px}
+  @media (max-width:620px){nav.top .nl{gap:14px;font-size:13px}nav.top .nl .hidem{display:none}}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  h1,h2,h3{font-family:var(--serif);font-weight:600;text-wrap:balance;letter-spacing:-.01em;line-height:1.15}
+  .mono{font-family:var(--mono)}
+  .tnum{font-variant-numeric:tabular-nums}
+
+  /* ---------- hero ---------- */
+  header{padding:78px 0 46px;text-align:center;border-bottom:1px solid var(--hair);
+    background:radial-gradient(120% 90% at 50% -10%, #FFFFFF 0%, var(--paper) 60%)}
+  .badge{display:inline-block;font-family:var(--mono);font-size:12px;letter-spacing:.15em;
+    text-transform:uppercase;color:var(--accent);background:var(--accent-soft);
+    padding:6px 13px;border-radius:100px;margin-bottom:26px}
+  .wordmark{font-family:var(--serif);font-weight:600;font-size:clamp(42px,7vw,72px);
+    line-height:.98;letter-spacing:-.03em;margin:0}
+  .wordmark .q{color:var(--accent)}
+  h1.title{font-size:clamp(23px,3.1vw,31px);font-weight:600;color:#2b2f39;
+    margin:16px auto 16px;max-width:none;line-height:1.28}
+  .tagline{font-size:clamp(16px,1.9vw,18.5px);color:var(--muted);max-width:56ch;
+    margin:0 auto 30px;line-height:1.55}
+  .tagline b{color:var(--ink);font-weight:600}
+  .tagline .hl{color:var(--accent);font-weight:600;font-variant-numeric:tabular-nums}
+  .authors{font-size:16.5px;max-width:640px;margin:0 auto 5px;line-height:1.85}
+  .authors .a{white-space:nowrap;margin:0 3px}
+  .authors sup{color:var(--accent);font-family:var(--mono);font-size:11px}
+  .affil{color:var(--muted);font-size:14.5px;margin:0 auto}
+  .affil .mail{font-family:var(--mono);font-size:13px}
+
+  /* ---------- link buttons ---------- */
+  .links{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:30px 0 6px}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:#fff;
+    font-size:14.5px;font-weight:500;padding:10px 18px;border-radius:100px;
+    transition:transform .13s ease,background .13s ease}
+  .btn:hover{background:var(--accent);text-decoration:none;transform:translateY(-2px)}
+  .btn svg{width:16px;height:16px;fill:currentColor;flex:0 0 auto}
+  .btn.primary{background:var(--accent)}
+  .btn.primary:hover{background:#232dad}
+
+  /* ---------- stat strip ---------- */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--hair);
+    border:1px solid var(--hair);border-radius:14px;overflow:hidden;margin:36px auto 0}
+  .stat{background:var(--surface);padding:20px 14px;text-align:center}
+  .stat .n{font-family:var(--mono);font-size:clamp(21px,3vw,28px);font-weight:600;color:var(--accent);letter-spacing:-.02em}
+  .stat .n .u{font-size:.58em;color:var(--muted)}
+  .stat .l{font-size:12px;color:var(--muted);margin-top:5px}
+
+  /* ---------- sections ---------- */
+  section{padding:54px 0}
+  section+section{border-top:1px solid var(--hair)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--accent);margin-bottom:11px;display:block}
+  h2{font-size:clamp(23px,3vw,30px);margin:0 0 18px}
+  h2.center{text-align:center}
+  .lead{font-size:18px;line-height:1.72;color:#22262F}
+  p{margin:0 0 17px}
+
+  /* ---------- contribution cards ---------- */
+  .contrib{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:26px}
+  .cc{background:var(--surface);border:1px solid var(--hair);border-radius:13px;padding:18px 18px}
+  .cc .ci{display:inline-flex;width:27px;height:27px;align-items:center;justify-content:center;
+    background:var(--accent-soft);color:var(--accent);border-radius:50%;font-family:var(--serif);font-weight:600;font-size:15px}
+  .cc h4{font-family:var(--serif);font-weight:600;font-size:16.5px;margin:11px 0 6px;line-height:1.2}
+  .cc p{margin:0;font-size:14px;color:var(--muted);line-height:1.5}
+  @media (max-width:640px){.contrib{grid-template-columns:1fr}}
+
+  /* ---------- method steps ---------- */
+  .step{padding:26px 0;border-top:1px solid var(--hair)}
+  .step:first-of-type{border-top:none;padding-top:6px}
+  .step .head{display:flex;align-items:baseline;gap:14px;margin-bottom:9px}
+  .step .idx{font-family:var(--serif);font-size:26px;font-weight:600;color:var(--accent);line-height:1;flex:0 0 auto}
+  .step h3{font-size:20px;margin:0}
+  .step p{margin:0 0 28px;color:#2b2f39;font-size:16.5px}
+
+  /* ---------- figures (all == column width) ---------- */
+  figure{margin:0}
+  .figcard{background:var(--surface);border:1px solid var(--hair);border-radius:14px;padding:16px;overflow-x:auto}
+  .figcard img{display:block;width:100%;height:auto;border-radius:4px}
+  figcaption{font-size:13.5px;color:var(--muted);line-height:1.55;margin-top:11px;padding:0 2px}
+  figcaption b{color:var(--ink);font-weight:600}
+
+  /* small-multiple curves */
+  .curves{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:24px}
+  .curves .cell{border:1px solid var(--hair);border-radius:10px;padding:8px;background:var(--surface)}
+  .curves img{display:block;width:100%;height:auto}
+  .curves .cl{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center;margin-top:4px;letter-spacing:.02em}
+
+  /* decompose 2x2 matrix */
+  .matrix{display:grid;grid-template-columns:auto 1fr 18px 1fr;column-gap:16px;row-gap:20px;align-items:center;max-width:600px;margin:0 auto}
+  .matrix .sp{border:none;background:none;box-shadow:none}
+  .matrix .chl{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--muted);text-align:center;padding-bottom:2px}
+  .matrix .rhl{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--muted);writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;white-space:nowrap}
+  .matrix .rhl.ok{color:var(--accent)}
+  .matrix .rhl.bad{color:var(--ours)}
+  .matrix .mcell img{display:block;width:100%;height:auto;border:1px solid var(--hair);border-radius:8px}
+  .corner{}
+
+  /* ---------- tables ---------- */
+  .tablecard{background:var(--surface);border:1px solid var(--hair);border-radius:14px;overflow:hidden}
+  .tscroll{overflow-x:auto}
+  table{border-collapse:collapse;width:100%;font-size:14px}
+  th,td{padding:9px 11px;text-align:center;white-space:nowrap}
+  thead th{font-family:var(--mono);font-size:11px;letter-spacing:.03em;text-transform:uppercase;
+    color:var(--muted);border-bottom:1.5px solid var(--hair);font-weight:600}
+  tbody td{border-bottom:1px solid var(--hair);font-variant-numeric:tabular-nums}
+  tbody tr:last-child td{border-bottom:none}
+  .rowhead{text-align:left;font-weight:600;font-family:var(--sans)}
+  .model{text-align:left;font-weight:600;color:var(--muted);font-size:13px}
+  tr.ours td{background:var(--ours-soft)}
+  tr.ours .rowhead{color:var(--ours)}
+  td.avg{font-weight:700}
+  tr.ours td.avg{color:var(--ours)}
+  .tag{color:var(--ours);font-family:var(--mono);font-size:10px;font-weight:700;vertical-align:super;margin-left:3px}
+  .best{font-weight:700;color:var(--accent)}
+  .ck{color:var(--accent);font-weight:700}
+  .no{color:#c3c9d2}
+  .dn{color:#2e8b57;font-family:var(--mono);font-size:11px}
+  .caption{font-size:13.5px;color:var(--muted);line-height:1.55;padding:13px 16px;border-top:1px solid var(--hair)}
+  .caption b{color:var(--ink)}
+  .figrow{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+
+  /* ---------- algorithm card (math typesetting) ---------- */
+  .algo{background:var(--surface);border:1px solid var(--hair);border-radius:14px;
+    padding:22px 24px;margin:4px 0 10px;font-family:var(--serif);font-size:15.5px;line-height:1.78;overflow-x:auto}
+  .algo .atitle{font-family:var(--sans);font-weight:700;font-size:14px;color:var(--ink);letter-spacing:-.01em}
+  .algo .ain{font-family:var(--sans);color:var(--muted);font-size:12px;border-bottom:1px solid var(--hair);
+    padding-bottom:12px;margin:4px 0 12px;line-height:1.55}
+  .algo .line{display:flex;gap:14px;padding:1px 0}
+  .algo .line>span:last-child{font-style:italic}
+  .algo .ln{font-family:var(--sans);font-style:normal;color:#aab0ba;width:15px;text-align:right;flex:0 0 auto;font-size:11px;user-select:none;padding-top:3px}
+  .algo sub,.algo sup{font-size:62%}
+  .algo .kw{font-style:normal;font-weight:600}
+  .algo .fn{font-style:normal}
+  .algo .phase{display:flex;align-items:center;gap:9px;margin:12px 0 5px;color:var(--accent);
+    font-family:var(--sans);font-weight:600;font-size:12.5px;border-top:1px dashed var(--hair);padding-top:11px}
+  .algo .phase b{display:inline-flex;width:19px;height:19px;align-items:center;justify-content:center;
+    background:var(--accent);color:#fff;border-radius:50%;font-size:11px;flex:0 0 auto}
+  .algo .cmt{font-style:normal;font-family:var(--sans);color:#9aa2ad;font-size:12px}
+
+  /* ---------- two-column step (fig + fig/table) ---------- */
+  .duo{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:stretch}
+  .duo .figcard,.duo .tablecard{margin:0;display:flex;flex-direction:column}
+  .duo .figcard img{margin:auto 0}
+
+  /* ---------- pipeline schematic: left-to-right, text-only ---------- */
+  .flow{display:flex;flex-flow:row wrap;align-items:center;justify-content:center;
+    gap:6px;height:100%;padding:8px 2px;font-family:var(--sans);font-size:11.5px}
+  .flow .node{background:var(--paper);border:1px solid var(--hair);border-radius:8px;
+    padding:6px 11px;color:var(--ink);white-space:nowrap}
+  .flow .node.emph{background:var(--surface);border-color:var(--accent);color:var(--accent);font-weight:600}
+  .flow .node.mut{color:var(--muted);white-space:normal;text-align:center}
+  .flow .norm{background:var(--accent);color:#fff;border-radius:100px;padding:6px 13px;white-space:nowrap;
+    box-shadow:0 3px 9px rgba(46,57,192,.22);font-weight:600;font-size:11px}
+  .flow .ar{color:#b7bdc7;font-size:12px}
+
+  /* ---------- bibtex ---------- */
+  .bibwrap{position:relative}
+  pre.bib{background:#12141b;color:#e8eaf2;font-family:var(--mono);font-size:13px;line-height:1.7;
+    padding:22px 24px;border-radius:14px;overflow-x:auto;margin:0}
+  pre.bib .k{color:#8f9bff}
+  .copy{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.1);color:#fff;border:none;
+    font-family:var(--mono);font-size:12px;padding:7px 12px;border-radius:8px;cursor:pointer}
+  .copy:hover{background:var(--accent)}
+
+  footer{border-top:1px solid var(--hair);padding:32px 0 58px;text-align:center;color:var(--muted);font-size:13px;line-height:1.7}
+  footer a{color:var(--muted);text-decoration:underline}
+
+  @media (max-width:640px){
+    .stats{grid-template-columns:1fr 1fr}
+    .curves{grid-template-columns:1fr}
+    .figrow{grid-template-columns:1fr}
+  }
+  /* ---------- elevation & interaction ---------- */
+  body .figcard,body .tablecard,body .cc,body .algo,body .curves .cell{box-shadow:0 1px 2px rgba(20,23,31,.04),0 12px 32px -20px rgba(20,23,31,.20);
+    transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+  body .figcard:hover,body .tablecard:hover,body .cc:hover,body .algo:hover,body .curves .cell:hover{transform:translateY(-4px);
+    box-shadow:0 2px 5px rgba(20,23,31,.05),0 22px 44px -18px rgba(46,57,192,.32);border-color:#cbd0e6}
+  .figcard img{cursor:zoom-in}
+  .btn:focus-visible,.nl a:focus-visible,.copy:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  nav.top .nl a{position:relative;transition:color .15s ease}
+  nav.top .nl a.active{color:var(--accent);font-weight:600}
+  nav.top .nl a.active::after{content:"";position:absolute;left:0;right:0;bottom:-13px;height:2px;background:var(--accent);border-radius:2px}
+
+  /* ---------- lightbox ---------- */
+  .lb{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;
+    background:rgba(16,18,25,.84);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);padding:4vh 4vw;cursor:zoom-out}
+  .lb.open{display:flex;animation:lbin .22s ease}
+  .lb img{max-width:94vw;max-height:92vh;border-radius:10px;background:#fff;padding:16px;
+    box-shadow:0 40px 90px -20px rgba(0,0,0,.6);animation:lbpop .24s cubic-bezier(.2,.8,.2,1)}
+  .lb .x{position:absolute;top:16px;right:22px;color:#fff;font-size:30px;line-height:1;background:none;border:none;cursor:pointer;opacity:.75}
+  .lb .x:hover{opacity:1}
+  @keyframes lbin{from{opacity:0}to{opacity:1}}
+  @keyframes lbpop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+
+  /* ---------- animation ---------- */
+  @media (prefers-reduced-motion:no-preference){
+    .r{opacity:0;transform:translateY(16px);transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .6s cubic-bezier(.2,.7,.2,1)}
+    .r.in{opacity:1;transform:none}
+    header .r{opacity:0;transform:translateY(16px);animation:rise .7s cubic-bezier(.2,.7,.2,1) forwards}
+    header .r:nth-child(2){animation-delay:.05s}
+    header .r:nth-child(3){animation-delay:.12s}
+    header .r:nth-child(4){animation-delay:.20s}
+    header .r:nth-child(5){animation-delay:.28s}
+    header .r:nth-child(6){animation-delay:.36s}
+    header .r:nth-child(7){animation-delay:.44s}
+    @keyframes rise{to{opacity:1;transform:none}}
+  }
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <div class="inner">
+    <a class="nm" href="#top">Muon<span class="q">Q</span></a>
+    <div class="nl">
+      <a href="#abstract">Abstract</a>
+      <a href="#method">Method</a>
+      <a href="#results">Results</a>
+      <a href="#ablation" class="hidem">Ablation</a>
+      <a href="#bibtex">BibTeX</a>
+    </div>
+  </div>
+</nav>
+
+<header id="top">
+  <div class="col">
+    <span class="badge r">CoLM 2026</span>
+    <p class="wordmark r">Muon<span class="q">Q</span></p>
+    <h1 class="title r">Enhancing Low-Bit Muon Quantization via Directional Fidelity Optimization</h1>
+    <p class="tagline r">A pure <b>4-bit</b> training framework for the Muon optimizer — matching full-precision quality while cutting optimizer-state memory by up to <span class="hl">7.3&times;</span>.</p>
+    <p class="authors r">
+      <span class="a">Yupeng Su<sup>1</sup></span><span class="a">Ruijie Zhang<sup>1</sup></span><span class="a">Ziyue Liu<sup>1</sup></span><span class="a">Yequan Zhao<sup>1</sup></span><span class="a">Zheng Zhang<sup>1</sup></span>
+    </p>
+    <p class="affil r"><sup style="color:var(--accent);font-family:var(--mono)">1</sup> University of California, Santa Barbara &nbsp;·&nbsp; <span class="mail">{yupengsu, zzhang01}@ucsb.edu</span></p>
+    <div class="links r">
+      <a class="btn primary" href="https://arxiv.org/pdf/2605.11396" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm8 1.5V8h4.5L14 3.5zM8 12h8v1.5H8V12zm0 3.5h8V17H8v-1.5z"/></svg>Paper</a>
+      <a class="btn" href="https://arxiv.org/abs/2605.11396" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M3 4h18v3H3V4zm2 5h14v11H5V9zm3 3v5h2v-5H8zm6 0-2 5h2l2-5h-2z"/></svg>arXiv</a>
+      <a class="btn" href="https://openreview.net/forum?id=8FxB2bwBjw" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 3a7 7 0 0 1 7 7 7 7 0 0 1-11.9 5L12 12V5z"/></svg>OpenReview</a>
+      <a class="btn" href="https://github.com/YupengSu/MuonQ" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M12 .5A11.5 11.5 0 0 0 8.4 22.9c.6.1.8-.25.8-.56v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.75.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 5 18.3 5.3 18.3 5.3c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.2c0 .3.2.66.8.55A11.5 11.5 0 0 0 12 .5z"/></svg>Code</a>
+      <a class="btn" href="#bibtex">
+        <svg viewBox="0 0 24 24"><path d="M6 4h12v2H6V4zm0 5h12v2H6V9zm0 5h8v2H6v-2zm0 5h12v2H6v-2z"/></svg>BibTeX</a>
+    </div>
+  </div>
+</header>
+
+<section id="abstract">
+  <div class="col">
+    <span class="eyebrow r">Abstract</span>
+    <h2 class="r">Preserve the direction, not the magnitude.</h2>
+    <p class="lead r">The Muon optimizer is a compelling alternative to Adam for training LLMs, achieving large compute savings through gradient orthogonalization. But Muon's state is unusually sensitive to quantization: orthogonalization discards singular-value magnitudes and keeps only <em>directional</em> information, so tiny errors in singular-vector directions get amplified into the update.</p>
+    <p class="lead r"><b>MuonQ</b> is a low-bit Muon framework built on <b>directional fidelity optimization</b> — three complementary techniques that together enable stable <b>pure 4-bit</b> quantization of Muon's optimizer states, recovering most of full-precision Muon's loss and downstream accuracy while cutting optimizer-state memory by up to <b>7.3&times;</b>.</p>
+    <div class="contrib r">
+      <div class="cc">
+        <span class="ci">1</span>
+        <h4>Pre-quantization normalization</h4>
+        <p>Unit-normalize before quantizing so every step injects equal-magnitude error — no preferred direction accumulates.</p>
+      </div>
+      <div class="cc">
+        <span class="ci">2</span>
+        <h4>Structural decomposition</h4>
+        <p>Quantize the singular factors separately, so errors rescale singular components instead of rotating their directions.</p>
+      </div>
+      <div class="cc">
+        <span class="ci">3</span>
+        <h4>&mu;-law companding</h4>
+        <p>Reallocate quantization bins toward the dense near-zero region where distinguishability matters most.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="method">
+  <div class="col">
+    <span class="eyebrow r">Method · a three-stage pipeline</span>
+    <h2 class="r">Directional fidelity optimization</h2>
+    <p class="r" style="color:var(--muted)">Muon's polar step maps every singular value to one, so only the error component that <em>rotates</em> singular vectors survives. MuonQ therefore targets the <span class="mono" style="font-size:15px">cosine similarity</span> of the momentum, not its reconstruction error — attacking directional error at three stages of a single training step.</p>
+
+    <div class="algo r">
+      <div class="atitle">Algorithm 1 · A single MuonQ training step</div>
+      <div class="ain"><b>Input:</b> gradient G<sub>t</sub>, learning rate &eta;, momentum &beta;, bit-width b, rank k, weights W<sub>t-1</sub>, and quantized states (U, S, R) — or &empty; at t = 1.</div>
+      <div class="line"><span class="ln">1</span><span><span class="kw">if</span> t = 1: &nbsp; M&#770;<sub>t-1</sub> &larr; 0 ; &nbsp; S&#770;<sub>t-1</sub> &larr; &Nscr;(0, I)</span></div>
+      <div class="line"><span class="ln">2</span><span><span class="kw">else</span>: &nbsp; <span class="fn">dequant</span> U&#770;, S&#770;, R&#770; &nbsp;&rarr;&nbsp; M&#770;<sub>t-1</sub> &larr; U&#770;<sub>t-1</sub>S&#770;<sub>t-1</sub> + R&#770;<sub>t-1</sub></span></div>
+      <div class="phase"><b>1</b> Pre-quantization normalization</div>
+      <div class="line"><span class="ln">3</span><span>M<sub>t</sub> &larr; &beta; M&#770;<sub>t-1</sub> + G<sub>t</sub> / &Vert;G<sub>t</sub>&Vert;<sub>F</sub></span></div>
+      <div class="line"><span class="ln">4</span><span>M&#772;<sub>t</sub> &larr; M<sub>t</sub> / &Vert;M<sub>t</sub>&Vert;<sub>F</sub> &nbsp;<span class="cmt">// unit-norm momentum</span></span></div>
+      <div class="phase"><b>2</b> Structural decomposition <span class="cmt">· power iteration</span></div>
+      <div class="line"><span class="ln">5</span><span>V<sub>t-1</sub> &larr; <span class="fn">RowNorm</span>(S&#770;<sub>t-1</sub>)</span></div>
+      <div class="line"><span class="ln">6</span><span>U<sub>t</sub> &larr; <span class="fn">orth</span>(M&#772;<sub>t</sub> V<sub>t-1</sub><sup>&#8868;</sup>) ; &nbsp; S<sub>t</sub> &larr; U<sub>t</sub><sup>&#8868;</sup>M&#772;<sub>t</sub> ; &nbsp; R<sub>t</sub> &larr; M&#772;<sub>t</sub> &minus; U<sub>t</sub>S<sub>t</sub></span></div>
+      <div class="phase"><b>3</b> Companding quantization</div>
+      <div class="line"><span class="ln">7</span><span><span class="fn">quantize</span> &nbsp;U<sub>t</sub> <span class="cmt">(col)</span>, &nbsp;S<sub>t</sub> <span class="cmt">(row)</span>, &nbsp;R<sub>t</sub> <span class="cmt">(group)</span> &nbsp;&rarr;&nbsp; 4-bit states</span></div>
+      <div class="line"><span class="ln">8</span><span>W<sub>t</sub> &larr; W<sub>t-1</sub> &minus; &eta; &middot; <span class="fn">polar</span>(M&#772;<sub>t</sub>) &nbsp;<span class="cmt">// parameter update</span></span></div>
+    </div>
+
+    <div class="step r">
+      <div class="head"><span class="idx">1</span><h3>Pre-quantization normalization</h3></div>
+      <p>Gradient and momentum norms swing across steps, so per-step quantization error swings too — and accumulates into an anisotropic drift the polar step is sensitive to. Normalizing both to unit Frobenius norm <em>before</em> quantizing makes every step inject equal-magnitude, isotropic error that never develops a preferred direction.</p>
+      <div class="duo">
+        <figure class="figcard">
+          <div class="flow">
+            <span class="node">Gradient</span>
+            <span class="ar">&rarr;</span>
+            <span class="norm">Normalize</span>
+            <span class="ar">&rarr;</span>
+            <span class="node">Add momentum</span>
+            <span class="ar">&rarr;</span>
+            <span class="norm">Normalize</span>
+            <span class="ar">&rarr;</span>
+            <span class="node emph">Unit momentum</span>
+            <span class="ar">&rarr;</span>
+            <span class="node mut">Decompose &middot; Quantize &middot; Update</span>
+          </div>
+          <figcaption><b>Where it plugs in.</b> Normalization is inserted at <b style="color:var(--accent)">two points</b> — on the incoming gradient and on the accumulated momentum — <em>before</em> any decomposition or quantization.</figcaption>
+        </figure>
+        <figure class="figcard">
+          <img src="static/images/momentum_drift.png" alt="Accumulated relative error and cosine similarity over 50 momentum steps, with and without normalization">
+          <figcaption><b>Effect.</b> Accumulated error over 50 momentum steps. Without normalization (red), relative error and cosine similarity <b>degrade monotonically</b>; normalization holds them flat.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="step r">
+      <div class="head"><span class="idx">2</span><h3>Structural decomposition for orthogonalization stability</h3></div>
+      <p>Orthogonalization <em>amplifies</em> directional error. MuonQ decomposes momentum via truncated top-<span class="mono">k</span> SVD (warm-started power iteration) and quantizes each factor separately — left singular vectors <b>column-wise</b>, scaled right vectors <b>row-wise</b>. Each singular direction becomes its own quantization group, so errors only rescale singular components rather than rotating them, and the polar step absorbs them.</p>
+      <figure class="figcard">
+        <div class="matrix">
+          <div class="corner"></div>
+          <div class="chl">before orthogonalization</div>
+          <div class="sp"></div>
+          <div class="chl">after orthogonalization</div>
+          <div class="rhl bad">no decomp. (k=0)</div>
+          <div class="mcell"><img src="static/images/rank0_before.png" alt="Singular spectrum without decomposition, before orthogonalization"></div>
+          <div class="sp"></div>
+          <div class="mcell"><img src="static/images/rank0_after.png" alt="Singular spectrum without decomposition, after orthogonalization — error amplified"></div>
+          <div class="rhl ok">with decomp. (k=512)</div>
+          <div class="mcell"><img src="static/images/rank512_before.png" alt="Singular spectrum with decomposition, before orthogonalization"></div>
+          <div class="sp"></div>
+          <div class="mcell"><img src="static/images/rank512_after.png" alt="Singular spectrum with decomposition, after orthogonalization — fidelity preserved"></div>
+        </div>
+        <figcaption>Singular-value spectra of the quantized momentum on <span class="mono">layers.6.self_attn.k_proj</span>. <b>Top row (no decomposition):</b> orthogonalization severely amplifies quantization error. <b>Bottom row (with decomposition):</b> directional fidelity is preserved straight through the polar step.</figcaption>
+      </figure>
+    </div>
+
+    <div class="step r">
+      <div class="head"><span class="idx">3</span><h3>&mu;-law companding quantization</h3></div>
+      <p>Because Muon weights all singular directions equally, resolution near zero — where momentum values pack densely — matters more than preserving outliers. MuonQ applies <b>&mu;-law companding</b> (&mu; = 255) to reallocate quantization bins toward this dense central region, shifting the objective from outlier preservation to dense-region distinguishability.</p>
+      <div class="duo">
+        <figure class="figcard">
+          <img src="static/images/companding_bands.png" alt="Mu-law companding reallocates quantization bins toward the dense near-zero region">
+          <figcaption>Momentum distribution (top) and quantization-interval bands (bottom); each block is one bin. <b>&mu;-law</b> packs finer bins where values concentrate, wider bins in the sparse tails.</figcaption>
+        </figure>
+        <div class="tablecard">
+          <div class="tscroll">
+            <table class="tnum">
+              <thead>
+                <tr><th class="rowhead">Gran.</th><th>RE&darr;<br><span style="font-weight:400;text-transform:none">Uni.</span></th><th>RE&darr;<br><span style="font-weight:400;text-transform:none">Comp.</span></th><th>CS&uarr;<br><span style="font-weight:400;text-transform:none">Uni.</span></th><th>CS&uarr;<br><span style="font-weight:400;text-transform:none">Comp.</span></th></tr>
+              </thead>
+              <tbody>
+                <tr><td class="rowhead">Tensor</td><td>0.509</td><td class="best">0.238</td><td>0.879</td><td class="best">0.973</td></tr>
+                <tr><td class="rowhead">Row</td><td>0.127</td><td class="best">0.111</td><td>0.992</td><td class="best">0.994</td></tr>
+                <tr><td class="rowhead">Column</td><td>0.254</td><td class="best">0.159</td><td>0.969</td><td class="best">0.988</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="caption">4-bit quantization of <span class="mono" style="font-size:12px">k_proj</span>. Companding (<b style="color:var(--accent)">Comp.</b>) lowers reconstruction error and raises cosine similarity at <b>every</b> granularity.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="results">
+  <div class="col">
+    <span class="eyebrow r">Results</span>
+    <h2 class="r">4-bit training that tracks full precision</h2>
+    <p class="r" style="color:var(--muted)">Pre-training on GPT-2 (Medium / Large) and LLaMA (350M / 1.1B) over FineWeb, all under the standard Muon protocol on A100s. MuonQ4 hugs the Muon32 curve from the first steps, while naive Muon4 never closes its gap.</p>
+
+    <figure class="curves r">
+      <div class="cell"><img src="static/images/gpt2m_curve.png" alt="GPT-2 Medium training loss"><div class="cl">GPT-2 Medium</div></div>
+      <div class="cell"><img src="static/images/llama_350m_curve.png" alt="LLaMA 350M training loss"><div class="cl">LLaMA-350M</div></div>
+      <div class="cell"><img src="static/images/llama_1_1b_curve.png" alt="LLaMA 1.1B training loss"><div class="cl">LLaMA-1.1B</div></div>
+    </figure>
+    <figcaption class="r" style="font-size:13.5px;color:var(--muted);margin:10px 2px 0">Training-loss curves on FineWeb. MuonQ4 closely tracks full-precision Muon32; naive Muon4's gap <b style="color:var(--ink)">grows with scale</b>.</figcaption>
+
+    <figure class="figcard r" style="margin-top:28px">
+      <img src="static/images/efficiency_bars.png" alt="Validation perplexity and optimizer-state memory across model scales">
+      <figcaption><b>Perplexity vs. optimizer memory.</b> Across scales, <b style="color:var(--ours)">MuonQ4</b> nearly closes the PPL gap to <b>Muon32</b> while cutting optimizer-state memory by up to <b>7.3&times;</b>.</figcaption>
+    </figure>
+
+    <h3 class="r" style="font-size:18px;margin:40px 0 13px">Zero-shot downstream accuracy</h3>
+    <div class="tablecard r">
+      <div class="tscroll">
+        <table class="tnum">
+          <thead><tr><th class="rowhead">Model</th><th class="rowhead">Opt.</th><th>ARC-c</th><th>ARC-e</th><th>OBQA</th><th>BoolQ</th><th>HellaS.</th><th>PIQA</th><th>WinoG.</th><th>Avg.</th></tr></thead>
+          <tbody>
+            <tr><td class="model" rowspan="4">GPT-2 Medium</td><td class="rowhead">Muon32</td><td>23.5</td><td>39.7</td><td>27.8</td><td>57.4</td><td>33.1</td><td>65.1</td><td>51.3</td><td class="avg">42.6</td></tr>
+            <tr><td class="rowhead">Muon8</td><td>24.4</td><td>39.5</td><td>29.0</td><td>56.4</td><td>32.1</td><td>64.6</td><td>51.2</td><td class="avg">42.5</td></tr>
+            <tr><td class="rowhead">Muon4</td><td>22.4</td><td>31.9</td><td>25.0</td><td>62.0</td><td>26.6</td><td>58.2</td><td>50.6</td><td class="avg">39.5</td></tr>
+            <tr class="ours"><td class="rowhead">MuonQ4<span class="tag">ours</span></td><td>23.9</td><td>37.8</td><td>25.6</td><td>60.7</td><td>30.2</td><td>63.1</td><td>50.8</td><td class="avg">41.7</td></tr>
+            <tr><td class="model" rowspan="4">GPT-2 Large</td><td class="rowhead">Muon32</td><td>24.0</td><td>42.6</td><td>29.4</td><td>56.4</td><td>37.9</td><td>67.2</td><td>49.4</td><td class="avg">43.8</td></tr>
+            <tr><td class="rowhead">Muon8</td><td>23.7</td><td>41.0</td><td>30.0</td><td>59.8</td><td>36.2</td><td>66.7</td><td>50.1</td><td class="avg">43.9</td></tr>
+            <tr><td class="rowhead">Muon4</td><td>21.1</td><td>35.1</td><td>23.4</td><td>61.8</td><td>27.5</td><td>58.2</td><td>50.0</td><td class="avg">39.6</td></tr>
+            <tr class="ours"><td class="rowhead">MuonQ4<span class="tag">ours</span></td><td>22.8</td><td>39.8</td><td>30.2</td><td>59.8</td><td>33.8</td><td>65.2</td><td>51.5</td><td class="avg">43.3</td></tr>
+            <tr><td class="model" rowspan="4">LLaMA 350M</td><td class="rowhead">Muon32</td><td>22.6</td><td>38.5</td><td>28.4</td><td>62.0</td><td>34.3</td><td>65.7</td><td>51.9</td><td class="avg">43.3</td></tr>
+            <tr><td class="rowhead">Muon8</td><td>22.9</td><td>38.2</td><td>27.6</td><td>61.2</td><td>32.3</td><td>63.4</td><td>53.7</td><td class="avg">42.8</td></tr>
+            <tr><td class="rowhead">Muon4</td><td>21.5</td><td>29.6</td><td>25.0</td><td>61.9</td><td>27.0</td><td>55.9</td><td>50.0</td><td class="avg">38.7</td></tr>
+            <tr class="ours"><td class="rowhead">MuonQ4<span class="tag">ours</span></td><td>22.4</td><td>38.1</td><td>27.8</td><td>60.9</td><td>31.0</td><td>63.7</td><td>51.6</td><td class="avg">42.2</td></tr>
+            <tr><td class="model" rowspan="4">LLaMA 1.1B</td><td class="rowhead">Muon32</td><td>26.4</td><td>45.2</td><td>30.4</td><td>60.9</td><td>45.9</td><td>69.6</td><td>51.3</td><td class="avg">47.1</td></tr>
+            <tr><td class="rowhead">Muon8</td><td>24.4</td><td>42.3</td><td>31.4</td><td>61.3</td><td>41.2</td><td>69.6</td><td>52.2</td><td class="avg">46.1</td></tr>
+            <tr><td class="rowhead">Muon4</td><td>22.2</td><td>34.1</td><td>25.6</td><td>60.3</td><td>28.5</td><td>58.7</td><td>49.6</td><td class="avg">39.8</td></tr>
+            <tr class="ours"><td class="rowhead">MuonQ4<span class="tag">ours</span></td><td>25.0</td><td>41.8</td><td>30.4</td><td>60.7</td><td>40.3</td><td>68.3</td><td>49.9</td><td class="avg">45.2</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="caption">Zero-shot accuracy (%, higher is better). <b>MuonQ4 trails Muon32 by only about one point on average</b> and recovers most of the accuracy lost by naive Muon4.</div>
+    </div>
+
+    <h3 class="r" style="font-size:18px;margin:38px 0 13px">Head-to-head on LLaMA 1.1B</h3>
+    <div class="tablecard r">
+      <div class="tscroll">
+        <table class="tnum">
+          <thead><tr><th class="rowhead">Method</th><th>Val PPL &darr;</th><th>Opt. Mem.</th><th>Mem. &darr;</th><th>Step time</th><th>Overhead</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">Muon32</td><td>11.47</td><td>4.50 GB</td><td>1.00&times;</td><td>4408 ms</td><td>—</td></tr>
+            <tr><td class="rowhead">Muon8</td><td>12.42</td><td>1.13 GB</td><td>4.00&times;</td><td>4434 ms</td><td>+0.58%</td></tr>
+            <tr><td class="rowhead">Muon4</td><td>23.18</td><td>0.56 GB</td><td>8.00&times;</td><td>4482 ms</td><td>+1.68%</td></tr>
+            <tr><td class="rowhead">GRASP <span style="color:var(--muted);font-weight:400">(8/4-bit)</span></td><td class="best">12.33</td><td>0.75 GB</td><td>6.02&times;</td><td>4833 ms</td><td>+9.64%</td></tr>
+            <tr class="ours"><td class="rowhead">MuonQ4<span class="tag">ours</span></td><td>12.67</td><td class="avg">0.62 GB</td><td class="avg">7.28&times;</td><td>4881 ms</td><td>+10.72%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="caption">Under identical training settings vs. mixed-precision <b>GRASP</b>. Pure 4-bit MuonQ4 reaches the <b>largest memory reduction of any method</b> at essentially no accuracy cost.</div>
+    </div>
+  </div>
+</section>
+
+<section id="ablation">
+  <div class="col">
+    <span class="eyebrow r">Ablation · GPT-2 Small, 1B tokens</span>
+    <h2 class="r">Every component earns its place</h2>
+
+    <div class="tablecard r">
+      <div class="tscroll">
+        <table class="tnum">
+          <thead><tr><th class="rowhead">Method</th><th>Compand</th><th>Norm</th><th>Decomp</th><th>PPL &darr;</th><th>Mem. &darr;</th></tr></thead>
+          <tbody>
+            <tr><td class="rowhead">Muon32</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td>36.4</td><td>324.0 MB</td></tr>
+            <tr><td class="rowhead">Muon4</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td>69.9</td><td>40.5 MB · 8.0&times;</td></tr>
+            <tr><td class="rowhead">MuonQ4</td><td class="ck">✓</td><td class="no">✗</td><td class="no">✗</td><td>66.6 <span class="dn">↓3.3</span></td><td>40.5 MB · 8.0&times;</td></tr>
+            <tr><td class="rowhead">MuonQ4</td><td class="no">✗</td><td class="ck">✓</td><td class="no">✗</td><td>50.0 <span class="dn">↓19.9</span></td><td>40.5 MB · 8.0&times;</td></tr>
+            <tr><td class="rowhead">MuonQ4</td><td class="ck">✓</td><td class="ck">✓</td><td class="no">✗</td><td>46.2 <span class="dn">↓23.7</span></td><td>40.5 MB · 8.0&times;</td></tr>
+            <tr><td class="rowhead">MuonQ4</td><td class="no">✗</td><td class="no">✗</td><td class="ck">✓</td><td>44.7 <span class="dn">↓25.2</span></td><td>44.3 MB · 7.3&times;</td></tr>
+            <tr class="ours"><td class="rowhead">MuonQ4<span class="tag">full</span></td><td class="ck">✓</td><td class="ck">✓</td><td class="ck">✓</td><td class="avg">40.9 <span class="dn">↓29.0</span></td><td class="avg">44.3 MB · 7.3&times;</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="caption">Each technique helps independently; <b>decomposition</b> gives the largest single gain, and the full stack reaches the best PPL–memory trade-off.</div>
+    </div>
+
+    <div class="r" style="display:flex;flex-direction:column;gap:16px;margin-top:22px">
+      <figure class="figcard">
+        <img src="static/images/rank_ablation_e2e.png" alt="Effect of truncation rank on validation PPL and optimizer memory" style="width:50%;margin:0 auto">
+        <figcaption><b>Truncation rank.</b> PPL improves sharply up to <span class="mono">k = 1/16</span>, then flattens while memory keeps rising — so <span class="mono">1/16</span> is the default (+9.4% memory).</figcaption>
+      </figure>
+      <figure class="figcard">
+        <img src="static/images/norm_ablation.png" alt="Training loss of full-precision Muon with and without pre-quantization normalization">
+        <figcaption><b>Normalization is loss-neutral.</b> Added to full-precision Muon, it leaves training curves unchanged — confirming it doesn't alter optimization dynamics.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="ack">
+  <div class="col">
+    <span class="eyebrow r">Acknowledgements</span>
+    <p class="r" style="color:var(--muted);font-size:14.5px;line-height:1.65;margin:0">This material is based upon work supported by the U.S. Department of Energy, Office of Science, Office of Advanced Scientific Computing Research, Artificial Intelligence for Science program, under contract DE-SC0025390. This research used resources of the National Energy Research Scientific Computing Center (NERSC), a DOE Office of Science User Facility, under Contract No. DE-AC02-05CH11231, using NERSC awards ASCR-ERCAP0030039 and ALCC-ERCAP0031379.</p>
+  </div>
+</section>
+
+<section id="bibtex">
+  <div class="col">
+    <span class="eyebrow r">Citation</span>
+    <h2 class="r">BibTeX</h2>
+    <div class="bibwrap r">
+      <button class="copy" onclick="const t=this;navigator.clipboard.writeText(document.getElementById('bib').innerText).then(()=>{t.textContent='Copied';setTimeout(()=>t.textContent='Copy',1600)})">Copy</button>
+      <pre class="bib" id="bib"><span class="k">@inproceedings</span>{su2026muonq,
+  title     = {MuonQ: Enhancing Low-Bit Muon Quantization
+               via Directional Fidelity Optimization},
+  author    = {Su, Yupeng and Zhang, Ruijie and Liu, Ziyue
+               and Zhao, Yequan and Zhang, Zheng},
+  booktitle = {Conference on Language Modeling (CoLM)},
+  year      = {2026},
+  url       = {https://arxiv.org/abs/2605.11396}
+}</pre>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="col">
+    <p>University of California, Santa Barbara &nbsp;·&nbsp; <a href="https://github.com/YupengSu/MuonQ" target="_blank" rel="noopener">github.com/YupengSu/MuonQ</a></p>
+    <p style="opacity:.72">Accepted to CoLM 2026 · page layout follows the academic project-page convention.</p>
+  </div>
+</footer>
+
+<div class="lb" id="lb"><button class="x" aria-label="Close">&times;</button><img alt="Enlarged figure"></div>
+
+<script>
+  // scroll-reveal
+  (function(){
+    var els=document.querySelectorAll('section .r');
+    if(!('IntersectionObserver' in window)||window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      els.forEach(function(e){e.classList.add('in')});return;
+    }
+    var io=new IntersectionObserver(function(en){
+      en.forEach(function(x){if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target)}})
+    },{threshold:0.12,rootMargin:'0px 0px -8% 0px'});
+    els.forEach(function(e){io.observe(e)});
+  })();
+
+  // lightbox: click any figure to enlarge
+  (function(){
+    var lb=document.getElementById('lb'), img=lb.querySelector('img');
+    document.querySelectorAll('.figcard img, .matrix img').forEach(function(im){
+      im.addEventListener('click',function(){img.src=im.src;lb.classList.add('open')});
+    });
+    function close(){lb.classList.remove('open');setTimeout(function(){if(!lb.classList.contains('open'))img.src=''},220)}
+    lb.addEventListener('click',close);
+    document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});
+  })();
+
+  // scroll-spy: highlight the active nav link
+  (function(){
+    if(!('IntersectionObserver' in window))return;
+    var links=[].slice.call(document.querySelectorAll('nav.top .nl a')), map={};
+    links.forEach(function(a){var id=a.getAttribute('href').slice(1),s=document.getElementById(id);if(s)map[id]=a;});
+    var spy=new IntersectionObserver(function(en){
+      en.forEach(function(e){
+        if(e.isIntersecting){links.forEach(function(a){a.classList.remove('active')});var a=map[e.target.id];if(a)a.classList.add('active');}
+      });
+    },{rootMargin:'-45% 0px -50% 0px',threshold:0});
+    Object.keys(map).forEach(function(id){spy.observe(document.getElementById(id))});
+  })();
+</script>
+
+</html>
