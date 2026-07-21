@@ -112,5 +112,14 @@ bash run.sh 0,1,2,3 muonq llama-60m
 
 ## Citation
 
-The paper is currently under double-blind review. Citation information will be
-added after release.
+```
+@inproceedings{su2026muonq,
+  title     = {MuonQ: Enhancing Low-Bit Muon Quantization
+               via Directional Fidelity Optimization},
+  author    = {Su, Yupeng and Zhang, Ruijie and Liu, Ziyue
+               and Zhao, Yequan and Zhang, Zheng},
+  booktitle = {Conference on Language Modeling (CoLM)},
+  year      = {2026},
+  url       = {https://arxiv.org/abs/2605.11396}
+}
+```
