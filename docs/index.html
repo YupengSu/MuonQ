@@ -29,9 +29,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&amp;display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,700;6..72,800&amp;display=swap">
+<link rel="preload" href="static/fonts/kit-math-pagella.woff2" as="font" type="font/woff2" crossorigin>
 <style>
 :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
 [hidden] { display: none !important; }
+@font-face { font-family: "Kit Math"; src: url("static/fonts/kit-math-pagella.woff2") format("woff2"); font-display: block; }
 /* ===========================================================
    Project-page kit for yupengsu.github.io
    Tokens, type and chrome come from the homepage (homepage.css):
@@ -52,7 +54,7 @@
   --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --serif: "Newsreader", Georgia, "Times New Roman", serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-  --font-math: "Newsreader", "STIX Two Math", "Cambria Math", Georgia, serif;
+  --font-math: "Kit Math", "Latin Modern Math", "STIX Two Math", "Cambria Math", math; /* Kit Math: Latin Modern Math (the papers' Computer Modern), subset, served by build.py */
   --display: var(--serif); /* a project sets its own display face for the title, nav name and headings */
   /* type scale and grid, shared by every page */
   --fs-cap: .875rem; --fs-ui: .86rem; --fs-body: 1.0625rem; --fs-lead: 1.125rem; --fs-h3: 1.36rem; --fs-h2: clamp(1.9rem, 3.1vw, 2.4rem);
@@ -101,8 +103,10 @@ p, ul, ol, figure, dl, dd { margin: 0; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .wrap { width: 100%; max-width: var(--maxw); margin-inline: auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 @media (min-width: 720px) { .wrap { padding-left: max(28px, env(safe-area-inset-left, 0px)); padding-right: max(28px, env(safe-area-inset-right, 0px)); } }
-.m { font-family: var(--font-math); font-style: italic; font-weight: 500; white-space: nowrap; }
-.m .u { font-style: normal; } /* upright bars, brackets and operators inside inline math */
+/* math: MathML from the papers' TeX (texmath.py), set in --font-math. Latin Modern has a small x-height next to Inter,
+   so inline math runs larger than the text, as KaTeX does (1.21em) */
+math { font-family: var(--font-math); }
+math.m { font-size: 1.16em; }
 .num { font-variant-numeric: tabular-nums; }
 code { font-family: var(--mono); font-size: .86em; }
 :not(pre) > code { background: var(--bg-soft); border: 1px solid var(--line); padding: .04em .36em; border-radius: 5px; white-space: nowrap; color: var(--ink); }
@@ -161,7 +165,7 @@ code { font-family: var(--mono); font-size: .86em; }
 .seg button:hover { color: var(--ink); }
 .seg button[aria-pressed="true"] { background: var(--bg-card); color: var(--ink); box-shadow: var(--shadow-sm); }
 .seg button[disabled] { opacity: .4; cursor: not-allowed; }
-.seg .m { font-size: .95rem; }
+.seg .m { font-size: 1.08rem; }
 input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; margin: 0; }
 
 /* ---------- hero ---------- */
@@ -288,18 +292,18 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; ma
 .sw.line { width: 18px; height: 3px; border-radius: 2px; }
 .sw.dot { border-radius: 50%; }
 .eq { padding: 14px 18px; background: var(--bg-soft); border-radius: var(--radius); overflow-x: auto; display: grid; gap: 6px; }
-.eq math { font-family: var(--font-math); font-size: 1.3rem; }
-/* fences marked .f come from a math font when one is installed, so they stretch around fractions */
-.eq mo.f { font-family: "STIX Two Math", "Cambria Math", "Latin Modern Math", var(--font-math); }
+.eq math { font-size: 1.3rem; }
 .eq .tag { font-size: .8rem; color: var(--muted); }
 /* an equation box in the figure column, with a title; .eq-wide / .eq-narrow are two layouts of one equation, the narrow one for phones */
 .eq--fig { gap: 10px; padding: 16px 20px; }
 .eq--fig .fig-title { text-align: left; }
 .eq--fig .tag { font-size: var(--fs-cap); line-height: 1.55; text-align: left; }
 .eq-narrow { display: none; }
-.eq .lines mtd { padding: 2px 0; }
-.eq .lines > mtr > mtd:first-child { text-align: right; padding-right: .3em; }
-.eq .lines > mtr > mtd:last-child { text-align: left; }
+/* Temml output: cramped scripts as in TeX; array cells */
+mfrac > :nth-child(2), msqrt, mover > :first-child { math-shift: compact; }
+.tml-right { text-align: right; } .tml-left { text-align: left; }
+@supports (not (-webkit-backdrop-filter: blur(1px))) and (not (-moz-appearance: none)) { .tml-right { text-align: -webkit-right; } .tml-left { text-align: -webkit-left; } }
+mtable.tml-jot > mtr > mtd { padding-top: .7ex; padding-bottom: .7ex; }
 .eq-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 22px; }
 @media (max-width: 560px) { .eq, .eq--fig { padding: 12px 14px; } .eq math, .story .eq math { font-size: 1.08rem; } .eq-wide { display: none; } .eq-narrow { display: revert; } }
 @media (max-width: 380px) { .eq math, .story .eq math { font-size: 1rem; } }
@@ -522,8 +526,10 @@ a.pipe__box:hover { border-color: var(--blue); transform: translateY(-2px); colo
 /* ---- D: what MuonQ stores ---- */
 .fac-grp { transition: opacity .6s, transform .8s var(--ease); }
 .fac-lbl { fill: var(--text); font: 600 13px var(--font); }
+.fac-lbl.t-math { font: 400 17px var(--font-math); fill: var(--ink); }
+.fac-sub .t-math { font: 400 13px var(--font-math); }
 .fac-sub { fill: var(--muted); font: 500 11.5px var(--font); }
-.fac-op { fill: var(--muted); font: 500 22px var(--serif); }
+.fac-op { fill: var(--muted); font: 400 22px var(--font-math); }
 .fac-box { fill: none; stroke: var(--c-q); stroke-width: 2; opacity: 0; transition: opacity .35s; }
 .fac-box.on { opacity: 1; }
 .fac-chipt { fill: var(--ink); font: 700 11px var(--font); opacity: 0; transition: opacity .35s; }
@@ -545,26 +551,20 @@ a.pipe__box:hover { border-color: var(--blue); transform: translateY(-2px); colo
 .cp-stat .o { font-size: .74rem; color: var(--muted); display: block; margin-top: 2px; font-variant-numeric: tabular-nums; }
 
 /* ---- Algorithm 1 ---- */
-.algo { font-family: var(--font-math); font-size: 1.04rem; line-height: 1.7; color: var(--ink); overflow-x: auto; }
+.algo { font-family: var(--font); font-size: 1rem; line-height: 1.7; color: var(--ink); overflow-x: auto; }
+.algo .ln math { font-size: 1.08em; }
 .algo__in { font-family: var(--font); font-size: .84rem; color: var(--muted); line-height: 1.55; padding-bottom: 12px; margin-bottom: 8px; border-bottom: 1px solid var(--line); }
 .algo__in b { color: var(--text); }
 .algo .ln { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 12px; padding: 2px 8px; margin: 0 -8px; border-radius: 8px; transition: background-color .3s; white-space: nowrap; }
 .algo .ln.on { background: color-mix(in srgb, var(--accent) 18%, transparent); }
 .algo .ln > .n { font-family: var(--font); font-size: .72rem; color: var(--muted); text-align: right; padding-top: 4px; font-variant-numeric: tabular-nums; }
-.algo i { font-style: italic; }
-.algo sub, .algo sup { font-size: 66%; font-style: normal; }
-.algo .kw { font-style: normal; font-weight: 600; font-family: var(--font); font-size: .84em; }
-.algo .fn { font-style: normal; }
+.algo .kw { font-style: normal; font-weight: 600; font-family: var(--font); font-size: .875em; }
 .algo .cm { font-family: var(--font); font-style: normal; font-size: .76rem; color: var(--muted); margin-left: 10px; }
 .algo .ph-h { display: flex; align-items: center; gap: 9px; margin: 12px 0 4px; padding-top: 10px; border-top: 1px dashed var(--line-strong); font-family: var(--font); font-size: .8rem; font-weight: 700; color: var(--ink); }
 .algo .ph-h a { color: var(--ink); display: inline-flex; align-items: center; gap: 9px; }
 .algo .ph-h a:hover { color: var(--blue); }
 .algo .ph-h .pn { width: 20px; height: 20px; border-radius: 5px; display: inline-grid; place-items: center; background: var(--badge); color: var(--on-badge); font-size: .7rem; flex: none; }
 .algo .ph-h .pn.u { background: var(--bg-soft); color: var(--muted); border: 1px solid var(--line-strong); }
-.acc { position: relative; display: inline-block; }
-.acc::after { position: absolute; left: 0; right: 0; text-align: center; font-style: normal; font-weight: 500; pointer-events: none; line-height: 1; }
-.acc.h::after { content: "\02C6"; top: .02em; padding-left: .24em; font-size: .95em; }
-.acc.b::after { content: ""; top: .02em; left: .26em; right: .04em; border-top: .07em solid currentColor; }
 
 /* ---- results: perplexity against memory ---- */
 .sc-ref { stroke: var(--c-fp); stroke-width: 1.4; stroke-dasharray: 5 5; opacity: .7; }
@@ -668,11 +668,11 @@ a.pipe__box:hover { border-color: var(--blue); transform: translateY(-2px); colo
         <h3 class="story__title">Rounding error that the polar step amplifies</h3>
         <p>Muon updates the weights with the polar factor of its momentum. It keeps every singular direction and gives each the same strength:</p>
         <div class="eq" role="group" aria-label="Muon's weight update">
-          <math display="block"><mrow><msub><mi>W</mi><mi>t</mi></msub><mo>=</mo><msub><mi>W</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>−</mo><mi>η</mi><mo>·</mo><mi>polar</mi><mo>(</mo><msub><mi>M</mi><mi>t</mi></msub><mo>)</mo></mrow></math>
+          <math display="block"><semantics><mrow><msub><mi>𝐖</mi><mi>t</mi></msub><mo>=</mo><msub><mi>𝐖</mi><mrow><mi>t</mi><mo lspace="0" rspace="0">−</mo><mn>1</mn></mrow></msub><mo>−</mo><mi>η</mi><mspace width="0.1667em"></mspace><mpadded lspace="0"><mi>polar</mi></mpadded><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>𝐌</mi><mi>t</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mat{W}_t = \mat{W}_{t-1} - \eta \, \mathrm{polar}(\mat{M}_t)</annotation></semantics></math>
         </div>
-        <p>Scale drops out of the polar factor, <span class="m"><span class="u">polar(</span>αM<span class="u">) = polar(</span>M<span class="u">)</span></span>, so the part of a 4-bit error that lies along <span class="m">M</span> is harmless. Only the part orthogonal to <span class="m">M</span> reaches the update, and its size, <span class="m"><span class="u">‖</span>M̂<span class="u">‖</span><sub>F</sub> <span class="u">√(1 − CS</span><sup>2</sup><span class="u">)</span></span>, is set by the cosine similarity of the copy:</p>
+        <p>Scale drops out of the polar factor, <math class="m"><semantics><mrow><mpadded lspace="0"><mi>polar</mi></mpadded><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>α</mi><mi>𝐌</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mpadded lspace="0"><mi>polar</mi></mpadded><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>𝐌</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mathrm{polar}(\alpha\mat{M}) = \mathrm{polar}(\mat{M})</annotation></semantics></math>, so the part of a 4-bit error that lies along <math class="m"><semantics><mi>𝐌</mi><annotation encoding="application/x-tex">\mat{M}</annotation></semantics></math> is harmless. Only the part orthogonal to <math class="m"><semantics><mi>𝐌</mi><annotation encoding="application/x-tex">\mat{M}</annotation></semantics></math> reaches the update, and its size, <math class="m"><semantics><mrow><mi>‖</mi><mover accent="true"><mi>𝐌</mi><mo>ˆ</mo></mover><msub><mpadded depth="0"><mi>‖</mi></mpadded><mi>F</mi></msub><msqrt><mrow><mn>1</mn><mo>−</mo><msup><mpadded lspace="0"><mi>CS</mi></mpadded><mn>2</mn></msup></mrow></msqrt></mrow><annotation encoding="application/x-tex">\|\hat{\mat{M}}\|_F \sqrt{1 - \mathrm{CS}^2}</annotation></semantics></math>, is set by the cosine similarity of the copy:</p>
         <div class="eq" role="group" aria-label="Cosine similarity of a 4-bit copy to full precision">
-          <math display="block"><mrow><mi>CS</mi><mo stretchy="false">(</mo><mi>M</mi><mo>,</mo><mover accent="true"><mi>M</mi><mo>&#x2C6;</mo></mover><mo stretchy="false">)</mo><mo>=</mo><mfrac><msub><mrow><mo stretchy="false">⟨</mo><mi>M</mi><mo>,</mo><mover accent="true"><mi>M</mi><mo>&#x2C6;</mo></mover><mo stretchy="false">⟩</mo></mrow><mi>F</mi></msub><mrow><msub><mrow><mo stretchy="false">‖</mo><mi>M</mi><mo stretchy="false">‖</mo></mrow><mi>F</mi></msub><mspace width="0.17em"/><msub><mrow><mo stretchy="false">‖</mo><mover accent="true"><mi>M</mi><mo>&#x2C6;</mo></mover><mo stretchy="false">‖</mo></mrow><mi>F</mi></msub></mrow></mfrac></mrow></math>
+          <math display="block"><semantics><mrow><mpadded lspace="0"><mi>CS</mi></mpadded><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>𝐌</mi><mo separator="true">,</mo><mover accent="true"><mi>𝐌</mi><mo>ˆ</mo></mover><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mfrac><msub><mpadded depth="0"><mrow><mo fence="true" form="prefix" stretchy="false">⟨</mo><mi>𝐌</mi><mo separator="true">,</mo><mspace width="0.1667em"></mspace><mover accent="true"><mi>𝐌</mi><mo>ˆ</mo></mover><mo fence="true" form="postfix" stretchy="false">⟩</mo></mrow></mpadded><mi>F</mi></msub><mrow><mi>‖</mi><mi>𝐌</mi><msub><mpadded depth="0"><mi>‖</mi></mpadded><mi>F</mi></msub><mo>⋅</mo><mi>‖</mi><mover accent="true"><mi>𝐌</mi><mo>ˆ</mo></mover><msub><mpadded depth="0"><mi>‖</mi></mpadded><mi>F</mi></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">\mathrm{CS}(\mat{M}, \hat{\mat{M}}) = \frac{\langle \mat{M},\, \hat{\mat{M}} \rangle_F}{\|\mat{M}\|_F \cdot \|\hat{\mat{M}}\|_F}</annotation></semantics></math>
         </div>
         <p>MuonQ therefore optimizes this <b>directional fidelity</b> instead of the relative error (RE), which also counts the harmless part. Every CS on this page compares a 4-bit result with full precision; 1 means the same direction.</p>
         <p>A plain 4-bit copy of the momentum still has a CS of 0.994. But its weak directions are mostly rounding error, and the polar step lifts them to full strength:</p>
@@ -711,19 +711,19 @@ a.pipe__box:hover { border-color: var(--blue); transform: translateY(-2px); colo
       </div>
       <div class="pipe" role="group" aria-label="One MuonQ training step">
         <div class="pipe__flow">
-          <span class="pipe__in"><span class="m">G<sub>t</sub></span></span>
+          <span class="pipe__in"><math class="m"><semantics><msub><mi>𝐆</mi><mi>t</mi></msub><annotation encoding="application/x-tex">\mat{G}_t</annotation></semantics></math></span>
           <span class="pipe__arr" aria-hidden="true"></span>
-          <a class="pipe__box" href="#step-n"><span class="badge">N</span><span class="pipe__t">Normalize</span><span class="pipe__f m">M<sub>t</sub> <span class="u">/ ‖</span>M<sub>t</sub><span class="u">‖</span></span></a>
+          <a class="pipe__box" href="#step-n"><span class="badge">N</span><span class="pipe__t">Normalize</span><span class="pipe__f"><math class="m"><semantics><mrow><msub><mi>𝐌</mi><mi>t</mi></msub><mspace width="0.1667em"></mspace><mi>/</mi><mspace width="0.1667em"></mspace><mi>‖</mi><msub><mi>𝐌</mi><mi>t</mi></msub><msub><mpadded depth="0"><mi>‖</mi></mpadded><mi>F</mi></msub></mrow><annotation encoding="application/x-tex">\mat{M}_t \,/\, \|\mat{M}_t\|_F</annotation></semantics></math></span></a>
           <span class="pipe__arr" aria-hidden="true"></span>
-          <a class="pipe__box" href="#step-d"><span class="badge">D</span><span class="pipe__t">Decompose</span><span class="pipe__f m">U<sub>k</sub>S<sub>k</sub> <span class="u">+</span> R<sub>k</sub></span></a>
+          <a class="pipe__box" href="#step-d"><span class="badge">D</span><span class="pipe__t">Decompose</span><span class="pipe__f"><math class="m"><semantics><mrow><msub><mi>𝐔</mi><mi>k</mi></msub><msub><mi>𝐒</mi><mi>k</mi></msub><mo>+</mo><msub><mi>𝐑</mi><mi>k</mi></msub></mrow><annotation encoding="application/x-tex">\mat{U}_k \mat{S}_k + \mat{R}_k</annotation></semantics></math></span></a>
           <span class="pipe__arr" aria-hidden="true"></span>
-          <a class="pipe__box" href="#step-c"><span class="badge">C</span><span class="pipe__t">Compand</span><span class="pipe__f m">Quant<sub>4</sub><span class="u">(</span>f<span class="u">(·))</span></span></a>
+          <a class="pipe__box" href="#step-c"><span class="badge">C</span><span class="pipe__t">Compand</span><span class="pipe__f"><math class="m"><semantics><mrow><msub><mpadded lspace="0"><mi>Quant</mi></mpadded><mn>4</mn></msub><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>f</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mo form="prefix" stretchy="false" lspace="0em" rspace="0em">⋅</mo><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mathrm{Quant}_4(f(\cdot))</annotation></semantics></math></span></a>
           <span class="pipe__arr" aria-hidden="true"></span>
-          <span class="pipe__box pipe__box--state"><span class="pipe__t">4-bit state</span><span class="pipe__f m">U<sub>k</sub>, S<sub>k</sub>, R<sub>k</sub></span></span>
+          <span class="pipe__box pipe__box--state"><span class="pipe__t">4-bit state</span><span class="pipe__f"><math class="m"><semantics><mrow><msub><mi>𝐔</mi><mi>k</mi></msub><mo separator="true">,</mo><mspace width="0.1667em"></mspace><msub><mi>𝐒</mi><mi>k</mi></msub><mo separator="true">,</mo><mspace width="0.1667em"></mspace><msub><mi>𝐑</mi><mi>k</mi></msub></mrow><annotation encoding="application/x-tex">\mat{U}_k,\, \mat{S}_k,\, \mat{R}_k</annotation></semantics></math></span></span>
         </div>
         <div class="pipe__sides">
-          <p class="pipe__update"><span class="pipe__tag">update</span><span class="m">W<sub>t</sub> <span class="u">=</span> W<sub>t−1</sub> <span class="u">−</span> η <span class="u">· polar(</span><span class="acc b">M</span><sub>t</sub><span class="u">)</span></span><span class="pipe__c">from the normalized momentum, as in Muon</span></p>
-          <p class="pipe__back"><span class="pipe__tag">next step</span><span class="m"><span class="acc h">M</span><sub>t</sub> <span class="u">=</span> <span class="acc h">U</span><span class="acc h">S</span> <span class="u">+</span> <span class="acc h">R</span></span><span class="pipe__c">dequantized from the 4-bit state</span></p>
+          <p class="pipe__update"><span class="pipe__tag">update</span><math class="m"><semantics><mrow><msub><mi>𝐖</mi><mi>t</mi></msub><mo>=</mo><msub><mi>𝐖</mi><mrow><mi>t</mi><mo lspace="0" rspace="0">−</mo><mn>1</mn></mrow></msub><mo>−</mo><mi>η</mi><mspace width="0.1667em"></mspace><mpadded lspace="0"><mi>polar</mi></mpadded><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mover accent="true"><mi>𝐌</mi><mo>¯</mo></mover><mi>t</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mat{W}_t = \mat{W}_{t-1} - \eta \, \mathrm{polar}(\bar{\mat{M}}_t)</annotation></semantics></math><span class="pipe__c">from the normalized momentum, as in Muon</span></p>
+          <p class="pipe__back"><span class="pipe__tag">next step</span><math class="m"><semantics><mrow><msub><mover accent="true"><mi>𝐌</mi><mo>ˆ</mo></mover><mi>t</mi></msub><mo>=</mo><mover accent="true"><mi>𝐔</mi><mo>ˆ</mo></mover><mspace width="0.1667em"></mspace><mover accent="true"><mi>𝐒</mi><mo>ˆ</mo></mover><mo>+</mo><mover accent="true"><mi>𝐑</mi><mo>ˆ</mo></mover></mrow><annotation encoding="application/x-tex">\hat{\mat{M}}_t = \hat{\mat{U}}\,\hat{\mat{S}} + \hat{\mat{R}}</annotation></semantics></math><span class="pipe__c">dequantized from the 4-bit state</span></p>
         </div>
       </div>
     </div>
@@ -735,7 +735,7 @@ a.pipe__box:hover { border-color: var(--blue); transform: translateY(-2px); colo
         <p><b class="pf-p">Problem.</b> A 4-bit scale follows the largest value, so each step's error grows and shrinks with the gradient norm. Over many steps the errors add up in one direction.</p>
         <p><b class="pf-f">Fix.</b> Scale the gradient and the momentum to unit norm before quantizing:</p>
         <div class="eq" role="group" aria-label="Pre-quantization normalization">
-          <math display="block"><mrow><msub><mi>M</mi><mi>t</mi></msub><mo>=</mo><mi>β</mi><msub><mover accent="true"><mi>M</mi><mo>&#x2C6;</mo></mover><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>+</mo><mfrac><msub><mi>G</mi><mi>t</mi></msub><msub><mrow><mo stretchy="false">‖</mo><msub><mi>G</mi><mi>t</mi></msub><mo stretchy="false">‖</mo></mrow><mi mathvariant="normal">F</mi></msub></mfrac><mo>,</mo><mspace width="1.2em"></mspace><msub><mover accent="true"><mi>M</mi><mo>¯</mo></mover><mi>t</mi></msub><mo>=</mo><mfrac><msub><mi>M</mi><mi>t</mi></msub><msub><mrow><mo stretchy="false">‖</mo><msub><mi>M</mi><mi>t</mi></msub><mo stretchy="false">‖</mo></mrow><mi mathvariant="normal">F</mi></msub></mfrac></mrow></math>
+          <math display="block"><semantics><mrow><msub><mi>𝐌</mi><mi>t</mi></msub><mo>=</mo><mi>β</mi><msub><mover accent="true"><mi>𝐌</mi><mo>ˆ</mo></mover><mrow><mi>t</mi><mo lspace="0" rspace="0">−</mo><mn>1</mn></mrow></msub><mo>+</mo><mfrac><msub><mi>𝐆</mi><mi>t</mi></msub><mrow><mi>‖</mi><msub><mi>𝐆</mi><mi>t</mi></msub><msub><mpadded depth="0"><mi>‖</mi></mpadded><mi>F</mi></msub></mrow></mfrac><mo separator="true">,</mo><mspace width="1em"></mspace><msub><mover accent="true"><mi>𝐌</mi><mo>¯</mo></mover><mi>t</mi></msub><mo>=</mo><mfrac><msub><mi>𝐌</mi><mi>t</mi></msub><mrow><mi>‖</mi><msub><mi>𝐌</mi><mi>t</mi></msub><msub><mpadded depth="0"><mi>‖</mi></mpadded><mi>F</mi></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">\mat{M}_t = \beta \hat{\mat{M}}_{t-1} + \frac{\mat{G}_t}{\|\mat{G}_t\|_F}, \quad \bar{\mat{M}}_{t} = \frac{\mat{M}_{t}}{\|\mat{M}_{t}\|_F}</annotation></semantics></math>
         </div>
         <div class="big"><span class="big__v"><span class="from">0.16</span><span class="arr">→</span><span class="to">0.90</span></span><span class="big__l">CS of the 4-bit momentum after 50 steps, without → with normalization</span></div>
       </div>
@@ -761,13 +761,13 @@ a.pipe__box:hover { border-color: var(--blue); transform: translateY(-2px); colo
         <span class="kicker"><span class="badge">D</span>Decompose</span>
         <h3 class="story__title">Give each strong direction its own scale</h3>
         <p><b class="pf-p">Problem.</b> With one scale for the whole matrix, the weak directions sink into rounding error, and the polar step gives them full weight.</p>
-        <p><b class="pf-f">Fix.</b> Split off the top-<span class="m">k</span> singular directions with one warm-started power step. <span class="m">U</span> gets a scale per column, <span class="m">S</span> per row; the small residual <span class="m">R</span> shares one:</p>
+        <p><b class="pf-f">Fix.</b> Split off the top-<math class="m"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math> singular directions with one warm-started power step. <math class="m"><semantics><mi>𝐔</mi><annotation encoding="application/x-tex">\mat{U}</annotation></semantics></math> gets a scale per column, <math class="m"><semantics><mi>𝐒</mi><annotation encoding="application/x-tex">\mat{S}</annotation></semantics></math> per row; the small residual <math class="m"><semantics><mi>𝐑</mi><annotation encoding="application/x-tex">\mat{R}</annotation></semantics></math> shares one:</p>
         <div class="eq eq-row" role="group" aria-label="Structural decomposition by one power-iteration step">
-          <math display="block"><mrow><msub><mover accent="true"><mi>M</mi><mo>¯</mo></mover><mi>t</mi></msub><mo>=</mo><msub><mi>U</mi><mi>t</mi></msub><msub><mi>S</mi><mi>t</mi></msub><mo>+</mo><msub><mi>R</mi><mi>t</mi></msub><mo>,</mo></mrow></math>
-          <math display="block"><mrow><msub><mi>U</mi><mi>t</mi></msub><mo>=</mo><mi>orth</mi><mo>(</mo><msub><mover accent="true"><mi>M</mi><mo>¯</mo></mover><mi>t</mi></msub><msubsup><mi>V</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow><mo>⊤</mo></msubsup><mo>)</mo><mo>,</mo><mspace width="0.6em"></mspace><msub><mi>S</mi><mi>t</mi></msub><mo>=</mo><msubsup><mi>U</mi><mi>t</mi><mo>⊤</mo></msubsup><msub><mover accent="true"><mi>M</mi><mo>¯</mo></mover><mi>t</mi></msub></mrow></math>
+          <math display="block"><semantics><mrow><msub><mover accent="true"><mi>𝐌</mi><mo>¯</mo></mover><mi>t</mi></msub><mo>=</mo><msub><mi>𝐔</mi><mi>t</mi></msub><mspace width="0.1667em"></mspace><msub><mi>𝐒</mi><mi>t</mi></msub><mo>+</mo><msub><mi>𝐑</mi><mi>t</mi></msub><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">\bar{\mat{M}}_t = \mat{U}_t \, \mat{S}_t + \mat{R}_t,</annotation></semantics></math>
+          <math display="block"><semantics><mrow><msub><mi>𝐔</mi><mi>t</mi></msub><mo>=</mo><mpadded lspace="0"><mi>orth</mi></mpadded><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mover accent="true"><mi>𝐌</mi><mo>¯</mo></mover><mi>t</mi></msub><mspace width="0.1667em"></mspace><msubsup><mi>𝐕</mi><mrow><mi>t</mi><mo lspace="0" rspace="0">−</mo><mn>1</mn></mrow><mrow><mrow style="margin-left:-0.1667em;"></mrow><mi>⊤</mi></mrow></msubsup><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo separator="true">,</mo><mspace width="1em"></mspace><msub><mi>𝐒</mi><mi>t</mi></msub><mo>=</mo><msubsup><mi>𝐔</mi><mi>t</mi><mrow><mrow style="margin-left:-0.1667em;"></mrow><mi>⊤</mi></mrow></msubsup><mspace width="0.1667em"></mspace><msub><mover accent="true"><mi>𝐌</mi><mo>¯</mo></mover><mi>t</mi></msub></mrow><annotation encoding="application/x-tex">\mat{U}_t = \mathrm{orth}(\bar{\mat{M}}_t \, \mat{V}_{t-1}^{\!\top}), \quad \mat{S}_t = \mat{U}_t^{\!\top}\,\bar{\mat{M}}_t</annotation></semantics></math>
         </div>
         <div class="big"><span class="big__v"><span class="from">0.674</span><span class="arr">→</span><span class="to">0.982</span></span><span class="big__l">CS of the update after the polar step, without → with decomposition</span></div>
-        <p class="note"><span class="m">k</span> = min<span class="u">(</span>m, n<span class="u">)</span>/16 for every layer: 9.4% more optimizer memory on GPT-2 Small. <span class="m">V</span><sub>t−1</sub> is <span class="m">Ŝ</span><sub>t−1</sub> with unit rows.</p>
+        <p class="note"><math class="m"><semantics><mrow><mi>k</mi><mo>=</mo><mrow><mi>min</mi><mo>⁡</mo></mrow><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>m</mi><mo separator="true">,</mo><mi>n</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>/</mi><mn>16</mn></mrow><annotation encoding="application/x-tex">k = \min(m, n)/16</annotation></semantics></math> for every layer: 9.4% more optimizer memory on GPT-2 Small. <math class="m"><semantics><msub><mi>𝐕</mi><mrow><mi>t</mi><mo lspace="0" rspace="0">−</mo><mn>1</mn></mrow></msub><annotation encoding="application/x-tex">\mat{V}_{t-1}</annotation></semantics></math> is <math class="m"><semantics><msub><mover accent="true"><mi>𝐒</mi><mo>ˆ</mo></mover><mrow><mi>t</mi><mo lspace="0" rspace="0">−</mo><mn>1</mn></mrow></msub><annotation encoding="application/x-tex">\hat{\mat{S}}_{t-1}</annotation></semantics></math> with unit rows.</p>
       </div>
       <figure class="story__fig">
         <div class="panel" id="factor">
@@ -778,7 +778,7 @@ a.pipe__box:hover { border-color: var(--blue); transform: translateY(-2px); colo
           <div class="chart"><svg id="facSvg" viewBox="0 0 640 230" role="img" aria-label="A momentum matrix is split into U, a tall matrix with k columns, times S, a wide matrix with k rows, plus a residual R. Each column of U and each row of S gets its own 4-bit scale; R gets one scale."></svg></div>
           <ul class="legend" aria-label="Legend"><li><span class="sw k-fp"></span>Larger magnitude</li><li><span class="sw box-q"></span>One 4-bit scale</li></ul>
         </div>
-        <figcaption class="fig-cap">Schematic on a 10 × 16 matrix with <span class="m">k</span> = 3. An error inside one direction's group mostly changes its strength, and the polar step resets every strength anyway.</figcaption>
+        <figcaption class="fig-cap">Schematic on a 10 × 16 matrix with <math class="m"><semantics><mrow><mi>k</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">k = 3</annotation></semantics></math>. An error inside one direction's group mostly changes its strength, and the polar step resets every strength anyway.</figcaption>
       </figure>
     </div>
 
@@ -789,7 +789,7 @@ a.pipe__box:hover { border-color: var(--blue); transform: translateY(-2px); colo
         <p><b class="pf-p">Problem.</b> Momentum values crowd around zero with a few large outliers. Evenly spaced levels stretch to cover the outliers and leave the dense center only a few codes.</p>
         <p><b class="pf-f">Fix.</b> Compress with μ-law before rounding and expand after, which packs the levels near zero:</p>
         <div class="eq" role="group" aria-label="The mu-law compressing function">
-          <math display="block"><mrow><mi>f</mi><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><mi>sgn</mi><mo>(</mo><mi>x</mi><mo>)</mo><mo>·</mo><mfrac><mrow><mi>ln</mi><mo>(</mo><mn>1</mn><mo>+</mo><mi>μ</mi><mo stretchy="false" lspace="0" rspace="0">|</mo><mi>x</mi><mo stretchy="false" lspace="0" rspace="0">|</mo><mo>)</mo></mrow><mrow><mi>ln</mi><mo>(</mo><mn>1</mn><mo>+</mo><mi>μ</mi><mo>)</mo></mrow></mfrac><mo>,</mo><mspace width="1.2em"></mspace><mi>μ</mi><mo>=</mo><mn>255</mn></mrow></math>
+          <math display="block"><semantics><mrow><mi>f</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mpadded lspace="0"><mi>sgn</mi></mpadded><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mspace width="0.1667em"></mspace><mfrac><mrow><mrow><mi>ln</mi><mo>⁡</mo></mrow><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>1</mn><mo>+</mo><mi>μ</mi><mspace width="0.1667em"></mspace><mi>|</mi><mi>x</mi><mi>|</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow><mrow><mrow><mi>ln</mi><mo>⁡</mo></mrow><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>1</mn><mo>+</mo><mi>μ</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></mfrac><mo separator="true">,</mo><mspace width="1em"></mspace><mi>μ</mi><mo>=</mo><mn>255</mn></mrow><annotation encoding="application/x-tex">f(x) = \mathrm{sgn}(x)\,\frac{\ln(1 + \mu\,|x|)}{\ln(1 + \mu)}, \quad \mu = 255</annotation></semantics></math>
         </div>
         <div class="big"><span class="big__v"><span class="from">0.879</span><span class="arr">→</span><span class="to">0.973</span></span><span class="big__l">CS of the 4-bit momentum on <code>layers.0.self_attn.k_proj</code> with one scale, even → μ-law levels (Table 1)</span></div>
         <p class="note">Per row 0.992 → 0.994, per column 0.969 → 0.988: μ-law helps at every grouping.</p>
@@ -818,18 +818,18 @@ a.pipe__box:hover { border-color: var(--blue); transform: translateY(-2px); colo
     <details class="more more--after">
       <summary>Algorithm 1: one full MuonQ step</summary>
       <div class="panel algo" id="algo" role="group" aria-label="Algorithm 1, simplified">
-        <p class="algo__in"><b>Input:</b> gradient <span class="m">G<sub>t</sub></span>, learning rate <span class="m">η</span>, momentum <span class="m">β</span>, rank <span class="m">k</span>, weights <span class="m">W<sub>t−1</sub></span>, and the 4-bit state <span class="m">(<span class="acc h">U</span>, <span class="acc h">S</span>, <span class="acc h">R</span>)</span> written by the previous step.</p>
-        <div class="ln" data-ph="0"><span class="n">1</span><span><span class="kw">read</span>&nbsp; <i><span class="acc h">M</span></i><sub>t−1</sub> ← <i><span class="acc h">U</span> <span class="acc h">S</span></i> + <i><span class="acc h">R</span></i><span class="cm">dequantize; zero at t = 1</span></span></div>
+        <p class="algo__in"><b>Input:</b> gradient <math class="m"><semantics><msub><mi>𝐆</mi><mi>t</mi></msub><annotation encoding="application/x-tex">\mat{G}_t</annotation></semantics></math>, learning rate <math class="m"><semantics><mi>η</mi><annotation encoding="application/x-tex">\eta</annotation></semantics></math>, momentum <math class="m"><semantics><mi>β</mi><annotation encoding="application/x-tex">\beta</annotation></semantics></math>, rank <math class="m"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>, weights <math class="m"><semantics><msub><mi>𝐖</mi><mrow><mi>t</mi><mo lspace="0" rspace="0">−</mo><mn>1</mn></mrow></msub><annotation encoding="application/x-tex">\mat{W}_{t-1}</annotation></semantics></math>, and the 4-bit state <math class="m"><semantics><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mover accent="true"><mi>𝐔</mi><mo>ˆ</mo></mover><mo separator="true">,</mo><mover accent="true"><mi>𝐒</mi><mo>ˆ</mo></mover><mo separator="true">,</mo><mover accent="true"><mi>𝐑</mi><mo>ˆ</mo></mover><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(\hat{\mat{U}}, \hat{\mat{S}}, \hat{\mat{R}})</annotation></semantics></math> written by the previous step.</p>
+        <div class="ln" data-ph="0"><span class="n">1</span><span><span class="kw">read</span>&nbsp; <math><semantics><mrow><msub><mover accent="true"><mi>𝐌</mi><mo>ˆ</mo></mover><mrow><mi>t</mi><mo lspace="0" rspace="0">−</mo><mn>1</mn></mrow></msub><mo stretchy="false">←</mo><mover accent="true"><mi>𝐔</mi><mo>ˆ</mo></mover><mspace width="0.1667em"></mspace><mover accent="true"><mi>𝐒</mi><mo>ˆ</mo></mover><mo>+</mo><mover accent="true"><mi>𝐑</mi><mo>ˆ</mo></mover></mrow><annotation encoding="application/x-tex">\hat{\mat{M}}_{t-1} \leftarrow \hat{\mat{U}}\,\hat{\mat{S}} + \hat{\mat{R}}</annotation></semantics></math><span class="cm">dequantize; zero at <math class="m"><semantics><mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">t = 1</annotation></semantics></math></span></span></div>
         <div class="ph-h" data-ph="1"><a href="#step-n"><span class="pn">N</span><span>Normalize</span></a></div>
-        <div class="ln" data-ph="1"><span class="n">2</span><span><i>M</i><sub>t</sub> ← <i>β <span class="acc h">M</span></i><sub>t−1</sub> + <i>G</i><sub>t</sub> / ‖<i>G</i><sub>t</sub>‖<sub>F</sub></span></div>
-        <div class="ln" data-ph="1"><span class="n">3</span><span><i><span class="acc b">M</span></i><sub>t</sub> ← <i>M</i><sub>t</sub> / ‖<i>M</i><sub>t</sub>‖<sub>F</sub><span class="cm">unit-norm momentum</span></span></div>
-        <div class="ph-h" data-ph="2"><a href="#step-d"><span class="pn">D</span><span>Split off the top-<i>k</i> directions</span></a></div>
-        <div class="ln" data-ph="2"><span class="n">4</span><span><i>V</i> ← <span class="fn">RowNorm</span>(<i><span class="acc h">S</span></i>);&nbsp; <i>U</i><sub>t</sub> ← <span class="fn">orth</span>(<i><span class="acc b">M</span></i><sub>t</sub> <i>V</i><sup>⊤</sup>)<span class="cm">one warm-started power step</span></span></div>
-        <div class="ln" data-ph="2"><span class="n">5</span><span><i>S</i><sub>t</sub> ← <i>U</i><sub>t</sub><sup>⊤</sup> <i><span class="acc b">M</span></i><sub>t</sub>;&nbsp; <i>R</i><sub>t</sub> ← <i><span class="acc b">M</span></i><sub>t</sub> − <i>U</i><sub>t</sub><i>S</i><sub>t</sub></span></div>
+        <div class="ln" data-ph="1"><span class="n">2</span><span><math><semantics><mrow><msub><mi>𝐌</mi><mi>t</mi></msub><mo stretchy="false">←</mo><mi>β</mi><mspace width="0.1667em"></mspace><msub><mover accent="true"><mi>𝐌</mi><mo>ˆ</mo></mover><mrow><mi>t</mi><mo lspace="0" rspace="0">−</mo><mn>1</mn></mrow></msub><mo>+</mo><msub><mi>𝐆</mi><mi>t</mi></msub><mspace width="0.1667em"></mspace><mi>/</mi><mspace width="0.1667em"></mspace><mi>‖</mi><msub><mi>𝐆</mi><mi>t</mi></msub><msub><mpadded depth="0"><mi>‖</mi></mpadded><mi>F</mi></msub></mrow><annotation encoding="application/x-tex">\mat{M}_t \leftarrow \beta \, \hat{\mat{M}}_{t-1} + \mat{G}_t \,/\, \|\mat{G}_t\|_F</annotation></semantics></math></span></div>
+        <div class="ln" data-ph="1"><span class="n">3</span><span><math><semantics><mrow><msub><mover accent="true"><mi>𝐌</mi><mo>¯</mo></mover><mi>t</mi></msub><mo stretchy="false">←</mo><msub><mi>𝐌</mi><mi>t</mi></msub><mspace width="0.1667em"></mspace><mi>/</mi><mspace width="0.1667em"></mspace><mi>‖</mi><msub><mi>𝐌</mi><mi>t</mi></msub><msub><mpadded depth="0"><mi>‖</mi></mpadded><mi>F</mi></msub></mrow><annotation encoding="application/x-tex">\bar{\mat{M}}_t \leftarrow \mat{M}_t \,/\, \|\mat{M}_t\|_F</annotation></semantics></math><span class="cm">unit-norm momentum</span></span></div>
+        <div class="ph-h" data-ph="2"><a href="#step-d"><span class="pn">D</span><span>Split off the top-<math class="m"><semantics><mi>𝒌</mi><annotation encoding="application/x-tex">\boldsymbol{k}</annotation></semantics></math> directions</span></a></div>
+        <div class="ln" data-ph="2"><span class="n">4</span><span><math><semantics><mrow><mi>𝐕</mi><mo stretchy="false">←</mo><mpadded lspace="0"><mi>RowNorm</mi></mpadded><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mover accent="true"><mi>𝐒</mi><mo>ˆ</mo></mover><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo separator="true">;</mo><mspace width="1em"></mspace><msub><mi>𝐔</mi><mi>t</mi></msub><mo stretchy="false">←</mo><mpadded lspace="0"><mi>orth</mi></mpadded><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mover accent="true"><mi>𝐌</mi><mo>¯</mo></mover><mi>t</mi></msub><mspace width="0.1667em"></mspace><msup><mi>𝐕</mi><mrow><mrow style="margin-left:-0.1667em;"></mrow><mi>⊤</mi></mrow></msup><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mat{V} \leftarrow \mathrm{RowNorm}(\hat{\mat{S}});\quad \mat{U}_t \leftarrow \mathrm{orth}(\bar{\mat{M}}_t \, \mat{V}^{\!\top})</annotation></semantics></math><span class="cm">one warm-started power step</span></span></div>
+        <div class="ln" data-ph="2"><span class="n">5</span><span><math><semantics><mrow><msub><mi>𝐒</mi><mi>t</mi></msub><mo stretchy="false">←</mo><msubsup><mi>𝐔</mi><mi>t</mi><mrow><mrow style="margin-left:-0.1667em;"></mrow><mi>⊤</mi></mrow></msubsup><mspace width="0.1667em"></mspace><msub><mover accent="true"><mi>𝐌</mi><mo>¯</mo></mover><mi>t</mi></msub><mo separator="true">;</mo><mspace width="1em"></mspace><msub><mi>𝐑</mi><mi>t</mi></msub><mo stretchy="false">←</mo><msub><mover accent="true"><mi>𝐌</mi><mo>¯</mo></mover><mi>t</mi></msub><mo>−</mo><msub><mi>𝐔</mi><mi>t</mi></msub><mspace width="0.1667em"></mspace><msub><mi>𝐒</mi><mi>t</mi></msub></mrow><annotation encoding="application/x-tex">\mat{S}_t \leftarrow \mat{U}_t^{\!\top}\,\bar{\mat{M}}_t;\quad \mat{R}_t \leftarrow \bar{\mat{M}}_t - \mat{U}_t \, \mat{S}_t</annotation></semantics></math></span></div>
         <div class="ph-h" data-ph="3"><a href="#step-c"><span class="pn">C</span><span>Compand and store in 4 bits</span></a></div>
-        <div class="ln" data-ph="3"><span class="n">6</span><span><span class="kw">store</span>&nbsp; <span class="fn">CQuant</span>(<i>U</i><sub>t</sub>) per column, <span class="fn">CQuant</span>(<i>S</i><sub>t</sub>) per row, <span class="fn">CQuant</span>(<i>R</i><sub>t</sub>) per tensor</span></div>
+        <div class="ln" data-ph="3"><span class="n">6</span><span><span class="kw">store</span>&nbsp; <math><semantics><mrow><mpadded lspace="0"><mi>CQuant</mi></mpadded><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>𝐔</mi><mi>t</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mathrm{CQuant}(\mat{U}_t)</annotation></semantics></math> per column, <math><semantics><mrow><mpadded lspace="0"><mi>CQuant</mi></mpadded><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>𝐒</mi><mi>t</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mathrm{CQuant}(\mat{S}_t)</annotation></semantics></math> per row, <math><semantics><mrow><mpadded lspace="0"><mi>CQuant</mi></mpadded><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>𝐑</mi><mi>t</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mathrm{CQuant}(\mat{R}_t)</annotation></semantics></math> per tensor</span></div>
         <div class="ph-h" data-ph="4"><span class="pn u">→</span>Update the weights, as in Muon</div>
-        <div class="ln" data-ph="4"><span class="n">7</span><span><i>W</i><sub>t</sub> ← <i>W</i><sub>t−1</sub> − <i>η</i> · <span class="fn">polar</span>(<i><span class="acc b">M</span></i><sub>t</sub>)</span></div>
+        <div class="ln" data-ph="4"><span class="n">7</span><span><math><semantics><mrow><msub><mi>𝐖</mi><mi>t</mi></msub><mo stretchy="false">←</mo><msub><mi>𝐖</mi><mrow><mi>t</mi><mo lspace="0" rspace="0">−</mo><mn>1</mn></mrow></msub><mo>−</mo><mi>η</mi><mspace width="0.1667em"></mspace><mpadded lspace="0"><mi>polar</mi></mpadded><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mover accent="true"><mi>𝐌</mi><mo>¯</mo></mover><mi>t</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mat{W}_t \leftarrow \mat{W}_{t-1} - \eta \, \mathrm{polar}(\bar{\mat{M}}_t)</annotation></semantics></math></span></div>
       </div>
     </details>
   </div>
@@ -947,7 +947,7 @@ a.pipe__box:hover { border-color: var(--blue); transform: translateY(-2px); colo
         </div>
         <div class="res-block">
           <h3 class="more-h">How many directions to split off</h3>
-          <p class="more-p">MuonQ4 on GPT-2 Small with truncation rank <span class="m">k</span> as a fraction of min<span class="u">(</span>m, n<span class="u">)</span>. Perplexity falls quickly up to 1/16, then flattens while memory keeps rising, so 1/16 is the default.</p>
+          <p class="more-p">MuonQ4 on GPT-2 Small with truncation rank <math class="m"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math> as a fraction of <math class="m"><semantics><mrow><mrow><mi>min</mi><mo>⁡</mo></mrow><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>m</mi><mo separator="true">,</mo><mi>n</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow><annotation encoding="application/x-tex">\min(m, n)</annotation></semantics></math>. Perplexity falls quickly up to 1/16, then flattens while memory keeps rising, so 1/16 is the default.</p>
           <div class="grid2 rank">
             <div class="panel"><div class="chart"><svg id="rkSvg" viewBox="0 0 520 290" role="img" aria-label="Perplexity against optimizer memory as the truncation rank grows from 0 to one half: perplexity drops quickly up to one sixteenth, then flattens while memory keeps rising."></svg></div></div>
             <div class="tbl-wrap">
@@ -1666,10 +1666,12 @@ const MuonQ = { init: function () {
   (function () {
     var svg = $('#facSvg'), fig = $('#factor'); if (!svg || !D) return;
     var F = D.fac, stage = 2, timers = [], E = null;
+    // titles as HTML: the matrices in math, as in the text (MathML from texmath.py)
+    var MU = '<math class="m"><mi>𝐔</mi></math>', MS = '<math class="m"><mi>𝐒</mi></math>', MR = '<math class="m"><mi>𝐑</mi></math>', MK = '<math class="m"><mi>k</mi></math>';
     var SUBS = [
       'The unit-norm momentum of one layer',
-      'Split into the top-k directions (U times S) plus a small residual R',
-      'Each column of U and each row of S has its own 4-bit scale; R shares one'
+      'Split into the top-' + MK + ' directions (' + MU + ' times ' + MS + ') plus a small residual ' + MR,
+      'Each column of ' + MU + ' and each row of ' + MS + ' has its own 4-bit scale; ' + MR + ' shares one'
     ];
     var sub = $('#facSub');
     function cells(g, mat, x0, y0, c) {
@@ -1717,11 +1719,17 @@ const MuonQ = { init: function () {
       gr.R = sv('g', { 'class': 'fac-grp' }, svg); cells(gr.R, F.R, P.R[0], P.R[1], c);
       var later = [gr.U, gr.S, gr.R];
       P.ops.forEach(function (o) { later.push(txt(svg, o[0], P.opY, o[1], 'fac-op', 'middle')); });
-      function lab(x, y, a, b) { var g = sv('g', null, svg); txt(g, x, y, a, 'fac-lbl', 'middle'); txt(g, x, y + 15, b, 'fac-sub', 'middle'); return g; }
-      lab(P.M[0] + 8 * c, narrow ? P.labYM : P.labY, 'M', 'momentum, m × n');
-      later.push(lab(P.U[0] + 1.5 * c, P.labY, 'U', 'k columns'));
-      later.push(lab(P.S[0] + 8 * c, P.labY, 'S', 'k rows'));
-      later.push(lab(P.R[0] + 8 * c, P.labY, 'R', 'small residual'));
+      // the matrix in bold math as in the text (𝐌, 𝐔, 𝐒, 𝐑), its size in words with math letters (𝑚, 𝑛, 𝑘)
+      function lab(x, y, a, b) {
+        var g = sv('g', null, svg); txt(g, x, y + 1, a, 'fac-lbl t-math', 'middle');
+        var t = txt(g, x, y + 16, '', 'fac-sub', 'middle');
+        b.forEach(function (part, i) { var ts = sv('tspan', i % 2 ? { 'class': 't-math' } : null, t); ts.textContent = part; });
+        return g;
+      }
+      lab(P.M[0] + 8 * c, narrow ? P.labYM : P.labY, '\u{1D40C}', ['momentum, ', '\u{1D45A} × \u{1D45B}']);
+      later.push(lab(P.U[0] + 1.5 * c, P.labY, '\u{1D414}', ['', '\u{1D458}', ' columns']));
+      later.push(lab(P.S[0] + 8 * c, P.labY, '\u{1D412}', ['', '\u{1D458}', ' rows']));
+      later.push(lab(P.R[0] + 8 * c, P.labY, '\u{1D411}', ['small residual']));
       var boxes = [];
       function gbox(x, y, w, h) { boxes.push(sv('rect', { 'class': 'fac-box', x: x, y: y, width: w, height: h, rx: 3 }, svg)); }
       for (var j = 0; j < 3; j++) gbox(P.U[0] + j * c - 1, P.U[1] - 1, c + 2, 10 * c + 2);
@@ -1745,7 +1753,7 @@ const MuonQ = { init: function () {
       E.boxes.forEach(function (b) { b.classList.toggle('on', st >= 2); });
       E.chips.forEach(function (t) { t.classList.toggle('on', st >= 2); });
       if (!animate) { void svg.getBoundingClientRect(); all.forEach(function (e) { e.style.transition = ''; }); }
-      sub.textContent = SUBS[st];
+      sub.innerHTML = SUBS[st];
     }
     function at(ms, fn) { timers.push(setTimeout(fn, ms)); }
     function run() {
@@ -1754,7 +1762,7 @@ const MuonQ = { init: function () {
       if (REDUCE) { stage = 2; apply(2, false); return; }
       at(900, function () { stage = 1; apply(1, true); });
       at(2300, function () {
-        stage = 2; sub.textContent = SUBS[2];
+        stage = 2; sub.innerHTML = SUBS[2];
         E.boxes.forEach(function (b, k) { b.classList.remove('on'); at(k * 230, function () { b.classList.add('on'); }); });
         E.chips.forEach(function (t, k) { t.classList.remove('on'); at([0, 3, 6][k] * 230 + 60, function () { t.classList.add('on'); }); });
       });
