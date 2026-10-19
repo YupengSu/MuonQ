@@ -670,9 +670,13 @@ a.pipe__box:hover { border-color: var(--blue); transform: translateY(-2px); colo
         <div class="eq" role="group" aria-label="Muon's weight update">
           <math display="block"><mrow><msub><mi>W</mi><mi>t</mi></msub><mo>=</mo><msub><mi>W</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>−</mo><mi>η</mi><mo>·</mo><mi>polar</mi><mo>(</mo><msub><mi>M</mi><mi>t</mi></msub><mo>)</mo></mrow></math>
         </div>
-        <p>In a plain 4-bit copy the weak directions are mostly rounding error. The copy still looks right, but the polar step lifts those directions to full strength.</p>
-        <div class="big"><span class="big__v"><span class="from">0.994</span><span class="arr">→</span><span class="to t-bad">0.674</span></span><span class="big__l">cosine similarity to full precision, before → after the polar step, plain 4-bit</span></div>
-        <p>So MuonQ quantizes for <b>directional fidelity</b>, the cosine similarity, instead of numerical error.</p>
+        <p>Scale drops out of the polar factor, <span class="m"><span class="u">polar(</span>αM<span class="u">) = polar(</span>M<span class="u">)</span></span>, so the part of a 4-bit error that lies along <span class="m">M</span> is harmless. Only the part orthogonal to <span class="m">M</span> reaches the update, and its size, <span class="m"><span class="u">‖</span>M̂<span class="u">‖</span><sub>F</sub> <span class="u">√(1 − CS</span><sup>2</sup><span class="u">)</span></span>, is set by the cosine similarity of the copy:</p>
+        <div class="eq" role="group" aria-label="Cosine similarity of a 4-bit copy to full precision">
+          <math display="block"><mrow><mi>CS</mi><mo stretchy="false">(</mo><mi>M</mi><mo>,</mo><mover accent="true"><mi>M</mi><mo>&#x2C6;</mo></mover><mo stretchy="false">)</mo><mo>=</mo><mfrac><msub><mrow><mo stretchy="false">⟨</mo><mi>M</mi><mo>,</mo><mover accent="true"><mi>M</mi><mo>&#x2C6;</mo></mover><mo stretchy="false">⟩</mo></mrow><mi>F</mi></msub><mrow><msub><mrow><mo stretchy="false">‖</mo><mi>M</mi><mo stretchy="false">‖</mo></mrow><mi>F</mi></msub><mspace width="0.17em"/><msub><mrow><mo stretchy="false">‖</mo><mover accent="true"><mi>M</mi><mo>&#x2C6;</mo></mover><mo stretchy="false">‖</mo></mrow><mi>F</mi></msub></mrow></mfrac></mrow></math>
+        </div>
+        <p>MuonQ therefore optimizes this <b>directional fidelity</b> instead of the relative error (RE), which also counts the harmless part. Every CS on this page compares a 4-bit result with full precision; 1 means the same direction.</p>
+        <p>A plain 4-bit copy of the momentum still has a CS of 0.994. But its weak directions are mostly rounding error, and the polar step lifts them to full strength:</p>
+        <div class="big"><span class="big__v"><span class="from">0.994</span><span class="arr">→</span><span class="to t-bad">0.674</span></span><span class="big__l">CS to full precision, plain 4-bit: the momentum → its update after the polar step</span></div>
       </div>
       <figure class="story__fig">
         <div class="panel demo" id="teaser">
@@ -688,8 +692,8 @@ a.pipe__box:hover { border-color: var(--blue); transform: translateY(-2px); colo
             <svg id="tzSvg" viewBox="0 0 640 310" role="img" aria-label="Singular-value spectra of a momentum matrix and of its 4-bit rounding error, before and after Muon's polar step, for plain 4-bit storage and for MuonQ."></svg>
           </div>
           <div class="tz-read">
-            <div class="tz-cs"><span class="ctl-label">Direction kept</span><span class="tz-cs__v num" id="tzCS">0.994</span><span class="meter" aria-hidden="true"><i id="tzMeter"></i></span></div>
-            <div class="tz-re"><span class="ctl-label">Relative error</span><b class="num" id="tzRE">0.110</b></div>
+            <div class="tz-cs"><span class="ctl-label">Directional fidelity (CS)</span><span class="tz-cs__v num" id="tzCS">0.994</span><span class="meter" aria-hidden="true"><i id="tzMeter"></i></span></div>
+            <div class="tz-re"><span class="ctl-label">Relative error (RE)</span><b class="num" id="tzRE">0.110</b></div>
             <ul class="legend" aria-label="Legend">
               <li><span class="sw line k-fp"></span>Momentum</li>
               <li><span class="sw line k-naive"></span>4-bit rounding error</li>
@@ -718,7 +722,7 @@ a.pipe__box:hover { border-color: var(--blue); transform: translateY(-2px); colo
           <span class="pipe__box pipe__box--state"><span class="pipe__t">4-bit state</span><span class="pipe__f m">U<sub>k</sub>, S<sub>k</sub>, R<sub>k</sub></span></span>
         </div>
         <div class="pipe__sides">
-          <p class="pipe__update"><span class="pipe__tag">update</span><span class="m">W<sub>t</sub> <span class="u">=</span> W<sub>t−1</sub> <span class="u">−</span> η <span class="u">·</span> polar<span class="u">(</span><span class="acc b">M</span><sub>t</sub><span class="u">)</span></span><span class="pipe__c">from the normalized momentum, as in Muon</span></p>
+          <p class="pipe__update"><span class="pipe__tag">update</span><span class="m">W<sub>t</sub> <span class="u">=</span> W<sub>t−1</sub> <span class="u">−</span> η <span class="u">· polar(</span><span class="acc b">M</span><sub>t</sub><span class="u">)</span></span><span class="pipe__c">from the normalized momentum, as in Muon</span></p>
           <p class="pipe__back"><span class="pipe__tag">next step</span><span class="m"><span class="acc h">M</span><sub>t</sub> <span class="u">=</span> <span class="acc h">U</span><span class="acc h">S</span> <span class="u">+</span> <span class="acc h">R</span></span><span class="pipe__c">dequantized from the 4-bit state</span></p>
         </div>
       </div>
@@ -733,13 +737,13 @@ a.pipe__box:hover { border-color: var(--blue); transform: translateY(-2px); colo
         <div class="eq" role="group" aria-label="Pre-quantization normalization">
           <math display="block"><mrow><msub><mi>M</mi><mi>t</mi></msub><mo>=</mo><mi>β</mi><msub><mover accent="true"><mi>M</mi><mo>&#x2C6;</mo></mover><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>+</mo><mfrac><msub><mi>G</mi><mi>t</mi></msub><msub><mrow><mo stretchy="false">‖</mo><msub><mi>G</mi><mi>t</mi></msub><mo stretchy="false">‖</mo></mrow><mi mathvariant="normal">F</mi></msub></mfrac><mo>,</mo><mspace width="1.2em"></mspace><msub><mover accent="true"><mi>M</mi><mo>¯</mo></mover><mi>t</mi></msub><mo>=</mo><mfrac><msub><mi>M</mi><mi>t</mi></msub><msub><mrow><mo stretchy="false">‖</mo><msub><mi>M</mi><mi>t</mi></msub><mo stretchy="false">‖</mo></mrow><mi mathvariant="normal">F</mi></msub></mfrac></mrow></math>
         </div>
-        <div class="big"><span class="big__v"><span class="from">0.16</span><span class="arr">→</span><span class="to">0.90</span></span><span class="big__l">cosine similarity after 50 steps, without → with normalization</span></div>
+        <div class="big"><span class="big__v"><span class="from">0.16</span><span class="arr">→</span><span class="to">0.90</span></span><span class="big__l">CS of the 4-bit momentum after 50 steps, without → with normalization</span></div>
       </div>
       <figure class="story__fig">
         <div class="panel" id="drift">
           <div class="drift-grid">
-            <div class="chart-mini"><p class="fig-title">Relative error <span>lower is better</span></p><div class="chart"><svg id="drRE" viewBox="0 0 340 210" role="img" aria-label="Relative error over 50 steps: without normalization it rises from 0.25 to about 1.27; with normalization it settles near 0.45."></svg></div></div>
-            <div class="chart-mini"><p class="fig-title">Cosine similarity <span>higher is better</span></p><div class="chart"><svg id="drCS" viewBox="0 0 340 210" role="img" aria-label="Cosine similarity over 50 steps: without normalization it falls from 0.97 to about 0.16; with normalization it stays near 0.90."></svg></div></div>
+            <div class="chart-mini"><p class="fig-title">Relative error (RE) <span>lower is better</span></p><div class="chart"><svg id="drRE" viewBox="0 0 340 210" role="img" aria-label="Relative error over 50 steps: without normalization it rises from 0.25 to about 1.27; with normalization it settles near 0.45."></svg></div></div>
+            <div class="chart-mini"><p class="fig-title">Directional fidelity (CS) <span>higher is better</span></p><div class="chart"><svg id="drCS" viewBox="0 0 340 210" role="img" aria-label="Cosine similarity (CS) over 50 steps: without normalization it falls from 0.97 to about 0.16; with normalization it stays near 0.90."></svg></div></div>
           </div>
           <div class="fig-foot">
             <button class="btn btn--sm" type="button" id="drPlay">Replay</button>
@@ -762,7 +766,7 @@ a.pipe__box:hover { border-color: var(--blue); transform: translateY(-2px); colo
           <math display="block"><mrow><msub><mover accent="true"><mi>M</mi><mo>¯</mo></mover><mi>t</mi></msub><mo>=</mo><msub><mi>U</mi><mi>t</mi></msub><msub><mi>S</mi><mi>t</mi></msub><mo>+</mo><msub><mi>R</mi><mi>t</mi></msub><mo>,</mo></mrow></math>
           <math display="block"><mrow><msub><mi>U</mi><mi>t</mi></msub><mo>=</mo><mi>orth</mi><mo>(</mo><msub><mover accent="true"><mi>M</mi><mo>¯</mo></mover><mi>t</mi></msub><msubsup><mi>V</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow><mo>⊤</mo></msubsup><mo>)</mo><mo>,</mo><mspace width="0.6em"></mspace><msub><mi>S</mi><mi>t</mi></msub><mo>=</mo><msubsup><mi>U</mi><mi>t</mi><mo>⊤</mo></msubsup><msub><mover accent="true"><mi>M</mi><mo>¯</mo></mover><mi>t</mi></msub></mrow></math>
         </div>
-        <div class="big"><span class="big__v"><span class="from">0.674</span><span class="arr">→</span><span class="to">0.982</span></span><span class="big__l">cosine similarity after the polar step, without → with decomposition</span></div>
+        <div class="big"><span class="big__v"><span class="from">0.674</span><span class="arr">→</span><span class="to">0.982</span></span><span class="big__l">CS of the update after the polar step, without → with decomposition</span></div>
         <p class="note"><span class="m">k</span> = min<span class="u">(</span>m, n<span class="u">)</span>/16 for every layer: 9.4% more optimizer memory on GPT-2 Small. <span class="m">V</span><sub>t−1</sub> is <span class="m">Ŝ</span><sub>t−1</sub> with unit rows.</p>
       </div>
       <figure class="story__fig">
@@ -787,7 +791,7 @@ a.pipe__box:hover { border-color: var(--blue); transform: translateY(-2px); colo
         <div class="eq" role="group" aria-label="The mu-law compressing function">
           <math display="block"><mrow><mi>f</mi><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><mi>sgn</mi><mo>(</mo><mi>x</mi><mo>)</mo><mo>·</mo><mfrac><mrow><mi>ln</mi><mo>(</mo><mn>1</mn><mo>+</mo><mi>μ</mi><mo stretchy="false" lspace="0" rspace="0">|</mo><mi>x</mi><mo stretchy="false" lspace="0" rspace="0">|</mo><mo>)</mo></mrow><mrow><mi>ln</mi><mo>(</mo><mn>1</mn><mo>+</mo><mi>μ</mi><mo>)</mo></mrow></mfrac><mo>,</mo><mspace width="1.2em"></mspace><mi>μ</mi><mo>=</mo><mn>255</mn></mrow></math>
         </div>
-        <div class="big"><span class="big__v"><span class="from">0.879</span><span class="arr">→</span><span class="to">0.973</span></span><span class="big__l">cosine similarity on <code>layers.0.self_attn.k_proj</code> with one scale, even → μ-law levels (Table 1)</span></div>
+        <div class="big"><span class="big__v"><span class="from">0.879</span><span class="arr">→</span><span class="to">0.973</span></span><span class="big__l">CS of the 4-bit momentum on <code>layers.0.self_attn.k_proj</code> with one scale, even → μ-law levels (Table 1)</span></div>
         <p class="note">Per row 0.992 → 0.994, per column 0.969 → 0.988: μ-law helps at every grouping.</p>
       </div>
       <figure class="story__fig">
@@ -803,8 +807,8 @@ a.pipe__box:hover { border-color: var(--blue); transform: translateY(-2px); colo
           <div class="cp-stats" aria-live="polite">
             <div class="cp-stat"><span class="k">Rounded to zero</span><span class="v" id="cpZero">67%</span><span class="o" id="cpZeroO"></span></div>
             <div class="cp-stat"><span class="k">Codes with ≥ 1%</span><span class="v" id="cpUsed">3</span><span class="o" id="cpUsedO"></span></div>
-            <div class="cp-stat"><span class="k">Relative error</span><span class="v" id="cpRE">0.49</span><span class="o" id="cpREO"></span></div>
-            <div class="cp-stat"><span class="k">Cosine</span><span class="v" id="cpCS">0.89</span><span class="o" id="cpCSO"></span></div>
+            <div class="cp-stat"><span class="k">RE</span><span class="v" id="cpRE">0.49</span><span class="o" id="cpREO"></span></div>
+            <div class="cp-stat"><span class="k">CS</span><span class="v" id="cpCS">0.89</span><span class="o" id="cpCSO"></span></div>
           </div>
         </div>
         <figcaption class="fig-cap">A synthetic 512 × 512 momentum with heavy tails (Student-t, 6 degrees of freedom), scaled to unit norm as in MuonQ; its numbers land close to the real layer.</figcaption>
@@ -1388,11 +1392,11 @@ const MuonQ = { init: function () {
       a: { cs: 0.9940, re: 0.1101, q: false,
         p: 'The momentum (blue) has a few strong directions and a long tail of weak ones. Rounding it to 4 bits adds an error (red) as large as the weak directions, yet the stored copy as a whole still looks almost perfect.' },
       b: { cs: 0.6736, re: 0.8255, q: false,
-        p: 'The polar step gives every direction about the same strength, so the weak directions, mostly rounding error, now count as much as the strong ones. Relative error jumps from 0.11 to 0.83, and cosine similarity to the full-precision update falls to 0.67.' },
+        p: 'The polar step gives every direction about the same strength, so the weak directions, mostly rounding error, now count as much as the strong ones. RE jumps from 0.11 to 0.83, and the CS of the update falls to 0.67.' },
       c: { cs: 0.9791, re: 0.2148, q: true,
-        p: 'MuonQ stores the strongest directions with their own 4-bit scales. The error now follows the signal and stays several times below it in every direction, although the copy as a whole is less exact (relative error 0.21 instead of 0.11).' },
+        p: 'MuonQ stores the strongest directions with their own 4-bit scales. The error now follows the signal and stays several times below it in every direction, although the copy as a whole is less exact (RE 0.21 instead of 0.11).' },
       d: { cs: 0.9822, re: 0.1879, q: true,
-        p: 'No direction is buried in rounding error, so the polar step has nothing to amplify. Relative error even drops slightly, to 0.19, and cosine similarity is 0.98.' }
+        p: 'No direction is buried in rounding error, so the polar step has nothing to amplify. RE even drops slightly, to 0.19, and the CS of the update is 0.98.' }
     };
     var cur = { s: S.a.s.slice(), e: S.a.e.slice() }, k = 'a', hoverJ = -1, G = null;
 
@@ -1586,8 +1590,8 @@ const MuonQ = { init: function () {
     var fig = $('#drift'); if (!fig || !D) return;
     var dr = D.drift, n = 50, stop = null, slider = $('#drStep'), read = $('#drRead');
     var panels = [
-      { svg: $('#drRE'), wo: dr.RE_wo, w: dr.RE_w, max: 1.4, ticks: [0, 0.5, 1], name: 'Relative error' },
-      { svg: $('#drCS'), wo: dr.CS_wo, w: dr.CS_w, max: 1.0, ticks: [0, 0.25, 0.5, 0.75, 1], name: 'Cosine similarity' }
+      { svg: $('#drRE'), wo: dr.RE_wo, w: dr.RE_w, max: 1.4, ticks: [0, 0.5, 1], name: 'RE' },
+      { svg: $('#drCS'), wo: dr.CS_wo, w: dr.CS_w, max: 1.0, ticks: [0, 0.25, 0.5, 0.75, 1], name: 'CS' }
     ];
     function valAt(arr, s) { var i = Math.floor(s) - 1, f = s - Math.floor(s); return i >= 49 ? arr[49] : lerp(arr[i], arr[i + 1], f); }
     function paintPanel(P) {
