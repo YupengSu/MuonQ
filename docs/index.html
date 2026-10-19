@@ -614,6 +614,9 @@ a.pipe__box:hover { border-color: var(--blue); transform: translateY(-2px); colo
   .meter i, .wf-bar, .wf-gone, .wf-pill, .fac-grp, .fac-box, .fac-chipt, .tz-zone, .tz-brk, .tz-zlab, .algo .ln, .tabs-img img, .pipe__box { transition: none !important; }
 }
 
+/* the problem row: the replay's result sits under the figure, so the two columns end together */
+#why .story__fig > .big { margin-top: 10px; }
+
 </style>
 <script>try{var t=localStorage.getItem('theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 </head>
@@ -675,8 +678,7 @@ a.pipe__box:hover { border-color: var(--blue); transform: translateY(-2px); colo
           <math display="block"><semantics><mrow><mpadded lspace="0"><mi>CS</mi></mpadded><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>𝐌</mi><mo separator="true">,</mo><mover accent="true"><mi>𝐌</mi><mo>ˆ</mo></mover><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mfrac><msub><mpadded depth="0"><mrow><mo fence="true" form="prefix" stretchy="false">⟨</mo><mi>𝐌</mi><mo separator="true">,</mo><mspace width="0.1667em"></mspace><mover accent="true"><mi>𝐌</mi><mo>ˆ</mo></mover><mo fence="true" form="postfix" stretchy="false">⟩</mo></mrow></mpadded><mi>F</mi></msub><mrow><mi>‖</mi><mi>𝐌</mi><msub><mpadded depth="0"><mi>‖</mi></mpadded><mi>F</mi></msub><mo>⋅</mo><mi>‖</mi><mover accent="true"><mi>𝐌</mi><mo>ˆ</mo></mover><msub><mpadded depth="0"><mi>‖</mi></mpadded><mi>F</mi></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">\mathrm{CS}(\mat{M}, \hat{\mat{M}}) = \frac{\langle \mat{M},\, \hat{\mat{M}} \rangle_F}{\|\mat{M}\|_F \cdot \|\hat{\mat{M}}\|_F}</annotation></semantics></math>
         </div>
         <p>MuonQ therefore optimizes this <b>directional fidelity</b> instead of the relative error (RE), which also counts the harmless part. Every CS on this page compares a 4-bit result with full precision; 1 means the same direction.</p>
-        <p>A plain 4-bit copy of the momentum still has a CS of 0.994. But its weak directions are mostly rounding error, and the polar step lifts them to full strength:</p>
-        <div class="big"><span class="big__v"><span class="from">0.994</span><span class="arr">→</span><span class="to t-bad">0.674</span></span><span class="big__l">CS to full precision, plain 4-bit: the momentum → its update after the polar step</span></div>
+        <p>A plain 4-bit copy of the momentum still has a CS of 0.994. But its weak directions are mostly rounding error, and the polar step lifts them to full strength.</p>
       </div>
       <figure class="story__fig">
         <div class="panel demo" id="teaser">
@@ -701,6 +703,7 @@ a.pipe__box:hover { border-color: var(--blue); transform: translateY(-2px); colo
           </div>
         </div>
         <figcaption class="fig-cap">One real layer, <code>layers.6.self_attn.k_proj</code>: its 512 singular directions, strongest first, and the 4-bit rounding error, traced from Fig. 3 of the paper. Hover the plot to read single directions.</figcaption>
+        <div class="big"><span class="big__v"><span class="from">0.994</span><span class="arr">→</span><span class="to t-bad">0.674</span></span><span class="big__l">CS to full precision, plain 4-bit: the momentum → its update after the polar step</span></div>
       </figure>
     </div>
 
