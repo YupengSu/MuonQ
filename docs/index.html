@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&amp;display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,300;125,850&amp;text=MQnou&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,700;6..72,800&amp;display=swap">
 <style>
 :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
 [hidden] { display: none !important; }
@@ -36,9 +36,10 @@
    Project-page kit for yupengsu.github.io
    Tokens, type and chrome come from the homepage (homepage.css):
    UCSB navy + white, quiet gold, Inter + Newsreader.
-   Each project adds only its accent, one detail of the title wordmark and its figures.
-   Layout: homepage frame (1080px). Every block (text, equations, figures, tables, code) spans the same column;
-   no block sets its own max-width.
+   Each project brings its own display face (--display), palette, title art and figures; the kit keeps
+   the chrome, the type scale and the control sizes the same on every page.
+   Layout: homepage frame (1080px) with one editorial grid: a text column (--col-a) and a figure column
+   (--col-b). Every row fills the frame: either both columns (text next to its figure) or one full-width block.
    =========================================================== */
 :root {
   --navy: #003660; --navy-700: #012a4d; --blue: #0a5bb5; --blue-600: #0d68cf; --gold: #e0a021;
@@ -52,6 +53,10 @@
   --serif: "Newsreader", Georgia, "Times New Roman", serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
   --font-math: "Newsreader", "STIX Two Math", "Cambria Math", Georgia, serif;
+  --display: var(--serif); /* a project sets its own display face for the title, nav name and headings */
+  /* type scale and grid, shared by every page */
+  --fs-cap: .875rem; --fs-ui: .86rem; --fs-body: 1.0625rem; --fs-lead: 1.125rem; --fs-h3: 1.36rem; --fs-h2: clamp(1.9rem, 3.1vw, 2.4rem);
+  --col-a: 5fr; --col-b: 7fr; --col-gap: clamp(28px, 4.6vw, 64px); --row-gap: clamp(56px, 7.5vw, 96px);
   --ease: cubic-bezier(.2, .7, .2, 1);
   /* project slots: a project stylesheet overrides these */
   --accent: #e0a021; --accent-soft: #fbf0d9; --on-accent: #1d1406; --accent-ink: #94650a;
@@ -111,7 +116,7 @@ code { font-family: var(--mono); font-size: .86em; }
 .nav__home { color: var(--muted); }
 .nav__home:hover { color: var(--blue); }
 .nav__sep { color: var(--line-strong); font-weight: 400; }
-.nav__here { color: var(--ink); overflow: hidden; text-overflow: ellipsis; }
+.nav__here { color: var(--ink); overflow: hidden; text-overflow: ellipsis; font-family: var(--display); }
 .nav__links { display: flex; align-items: center; gap: 4px; }
 .nav__links a { color: var(--muted); font-weight: 500; font-size: .92rem; padding: 7px 11px; border-radius: 8px; position: relative; transition: color .18s, background .18s; }
 .nav__links a:hover { color: var(--ink); background: var(--bg-soft); }
@@ -141,7 +146,7 @@ code { font-family: var(--mono); font-size: .86em; }
 .btn--primary { background: var(--navy); border-color: var(--navy); color: var(--on-navy); }
 .btn--primary svg { color: currentColor; }
 .btn--primary:hover { background: var(--blue); border-color: var(--blue); color: var(--on-navy); }
-.btn--sm { min-height: 32px; padding: 0 11px; font-size: .84rem; border-radius: 8px; box-shadow: none; }
+.btn--sm { min-height: 32px; padding: 0 12px; font-size: var(--fs-ui); border-radius: 8px; box-shadow: none; }
 .btn--sm:hover { transform: none; box-shadow: none; }
 .btn--icon { width: 32px; padding: 0; justify-content: center; }
 .btn[disabled] { opacity: .45; cursor: not-allowed; transform: none; border-color: var(--line); }
@@ -150,9 +155,9 @@ code { font-family: var(--mono); font-size: .86em; }
 .shield__v { background: var(--navy); color: var(--on-navy); padding: 5px 11px; font-variant-numeric: tabular-nums; }
 .ctl-row { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: flex-end; }
 .ctl { display: grid; gap: 6px; min-width: 0; }
-.ctl-label { font-size: .8rem; font-weight: 600; color: var(--muted); }
+.ctl-label { font-size: .78rem; font-weight: 600; color: var(--muted); }
 .seg { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 3px; border-radius: 10px; background: var(--line); }
-.seg button { appearance: none; border: 0; background: transparent; color: var(--muted); font: 600 .84rem/1 var(--font); padding: 8px 12px; border-radius: 8px; cursor: pointer; white-space: nowrap; }
+.seg button { appearance: none; border: 0; background: transparent; color: var(--muted); font: 600 var(--fs-ui)/1 var(--font); height: 30px; padding: 0 12px; border-radius: 8px; cursor: pointer; white-space: nowrap; }
 .seg button:hover { color: var(--ink); }
 .seg button[aria-pressed="true"] { background: var(--bg-card); color: var(--ink); box-shadow: var(--shadow-sm); }
 .seg button[disabled] { opacity: .4; cursor: not-allowed; }
@@ -163,8 +168,8 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; ma
 .hero { padding-block: clamp(28px, 4.5vw, 56px) clamp(24px, 3vw, 34px); }
 .nw { white-space: nowrap; }
 .hero__venue { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; font-size: .9rem; color: var(--muted); }
-.hero__subtitle { margin-top: 16px; text-wrap: balance; font-family: var(--serif); font-weight: 600; font-size: clamp(1.35rem, 2.6vw, 1.85rem); line-height: 1.22; letter-spacing: -.01em; color: var(--ink); }
-.hero__tagline { margin-top: 10px; font-size: 1.05rem; color: var(--text); }
+.hero__subtitle { margin-top: 18px; text-wrap: balance; font-family: var(--serif); font-weight: 600; font-size: clamp(1.35rem, 2.5vw, 1.8rem); line-height: 1.24; letter-spacing: -.01em; color: var(--ink); }
+.hero__tagline { margin-top: 10px; font-size: var(--fs-lead); line-height: 1.6; color: var(--text); text-wrap: pretty; }
 .hero__authors { margin-top: 22px; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 3px 16px; font-size: 1rem; font-weight: 500; color: var(--ink); }
 .hero__authors li { white-space: nowrap; }
 .hero__authors a { color: var(--ink); }
@@ -173,20 +178,62 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; ma
 .hero__affil { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 2px 18px; font-size: .88rem; color: var(--muted); }
 .hero__affil sup { font-weight: 600; margin-right: 2px; }
 .hero__links { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 8px; }
-/* one wordmark for every page: Archivo expanded, heavy; a project styles only its detail span */
-.title-art { margin-top: 18px; color: var(--ink); font-family: "Archivo", var(--font); font-stretch: 125%; font-weight: 850; font-size: clamp(46px, 8.8vw, 94px); line-height: .92; letter-spacing: -.028em; }
+/* the title art: one size for every page, the face and the detail are the project's */
+.title-art { margin-top: 16px; color: var(--ink); font-family: var(--display); font-weight: 700; font-size: clamp(54px, 9vw, 104px); line-height: .96; letter-spacing: -.02em; }
 
 /* ---------- sections ---------- */
-.section { padding-block: clamp(38px, 5.5vw, 60px); border-top: 1px solid var(--line); }
-.section__head { display: grid; gap: 12px; margin-bottom: clamp(20px, 3vw, 30px); }
-.section__title { font-family: var(--serif); font-size: 1.55rem; font-weight: 600; letter-spacing: -.01em; line-height: 1.2; }
+.section { padding-block: clamp(52px, 7vw, 88px); border-top: 1px solid var(--line); }
+.section__head { display: grid; gap: 12px; margin-bottom: clamp(24px, 3.4vw, 36px); }
+.section__title { font-family: var(--display); font-size: var(--fs-h2); font-weight: 600; letter-spacing: -.015em; line-height: 1.1; }
+
+/* ---------- the editorial grid: text next to its figure ---------- */
+.sec-head { display: grid; grid-template-columns: minmax(0, var(--col-a)) minmax(0, var(--col-b)); column-gap: var(--col-gap); row-gap: 12px; align-items: baseline; margin-bottom: clamp(32px, 4.4vw, 52px); }
+.sec-head .lede { font-size: var(--fs-lead); line-height: 1.6; color: var(--text); text-wrap: pretty; }
+.story { display: grid; grid-template-columns: minmax(0, var(--col-a)) minmax(0, var(--col-b)); column-gap: var(--col-gap); row-gap: 20px; align-items: start; }
+.story--flip { grid-template-columns: minmax(0, var(--col-b)) minmax(0, var(--col-a)); }
+.story--flip > .story__text { order: 2; }
+.story + .story, .story + .wide, .wide + .story, .wide + .wide { margin-top: var(--row-gap); }
+.story__text { display: grid; gap: 14px; align-content: start; min-width: 0; }
+.story__text p { font-size: var(--fs-body); line-height: 1.7; text-wrap: pretty; }
+.story__text p.note { font-size: var(--fs-cap); line-height: 1.55; }
+.story__text .eq { margin-block: 4px; }
+.story .eq math { font-size: 1.2rem; } /* equations inside a row; a long one goes to the figure column */
+.story__fig { display: grid; gap: 12px; align-content: start; min-width: 0; }
+.story__title { font-family: var(--display); font-size: var(--fs-h3); font-weight: 600; line-height: 1.2; letter-spacing: -.01em; color: var(--ink); text-wrap: balance; }
+@media (min-width: 961px) { .story__text--sticky { position: sticky; top: 92px; } }
+@media (max-width: 960px) {
+  .story, .story--flip, .sec-head { grid-template-columns: minmax(0, 1fr); }
+  .story--flip > .story__text { order: 0; }
+}
+/* a head row on the grid: a kicker and title on the left, their numbers or note on the right */
+.split { display: grid; grid-template-columns: minmax(0, var(--col-a)) minmax(0, var(--col-b)); column-gap: var(--col-gap); row-gap: 16px; align-items: end; }
+.split__a { display: grid; gap: 10px; align-content: start; }
+.split + .panel, .split + figure { margin-top: clamp(20px, 2.6vw, 28px); }
+@media (max-width: 960px) { .split { grid-template-columns: minmax(0, 1fr); } }
+.kicker { display: inline-flex; align-items: center; gap: 8px; font: 700 .74rem/1.2 var(--font); letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink); }
+/* big numbers: a value (often before -> after) and one line that says what it is */
+.bigs { display: grid; gap: 16px; }
+.big { display: grid; gap: 3px; align-content: start; }
+.big__v { font-family: var(--display); font-weight: 700; font-size: clamp(1.75rem, 2.8vw, 2.2rem); line-height: 1.05; color: var(--ink); font-variant-numeric: tabular-nums lining-nums; letter-spacing: -.01em; }
+.big__v .from { color: var(--muted); font-weight: 500; }
+.big__v .arr { color: var(--line-strong); font-weight: 400; margin: 0 .12em; }
+.big__v .to { color: var(--accent-ink); }
+.big__v small { font-size: .55em; font-weight: 600; color: var(--muted); margin-left: .12em; }
+.big__l { font-size: var(--fs-cap); line-height: 1.5; color: var(--muted); }
+/* a row of big numbers: each takes an equal share, but never less than its value */
+.bigs--row { display: flex; flex-wrap: wrap; gap: 16px 28px; }
+.bigs--row .big { flex: 1 1 0; }
+.bigs--row .big__v { white-space: nowrap; }
+@media (max-width: 560px) { .bigs--row { flex-direction: column; gap: 14px; } }
+.panel { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--radius); padding: clamp(14px, 2.2vw, 22px); min-width: 0; }
+.panel--soft { background: var(--bg-soft); border-color: transparent; }
 .sub { margin-top: clamp(34px, 5vw, 56px); display: grid; gap: 16px; }
 .sub:first-child { margin-top: 0; }
-.sub__title { font-family: var(--serif); font-size: 1.25rem; font-weight: 600; letter-spacing: -.005em; line-height: 1.25; }
+.sub__title { font-family: var(--display); font-size: var(--fs-h3); font-weight: 600; letter-spacing: -.005em; line-height: 1.25; }
 .prose { display: grid; gap: 13px; }
-.prose p { font-size: 1.01rem; text-wrap: pretty; }
+.prose p { font-size: var(--fs-body); line-height: 1.7; text-wrap: pretty; }
 .lede { font-size: 1.08rem; color: var(--ink); }
-.note { font-size: .86rem; color: var(--muted); }
+.note { font-size: var(--fs-cap); line-height: 1.55; color: var(--muted); }
 .callout { border-left: 3px solid var(--accent); background: var(--bg-soft); padding: 12px 16px; border-radius: 0 12px 12px 0; color: var(--text); }
 .dots { list-style: none; padding: 0; display: grid; gap: 10px; }
 .dots li { position: relative; padding-left: 20px; }
@@ -233,7 +280,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; ma
 /* ---------- figures ---------- */
 .bench { background: var(--bg-soft); border-radius: var(--radius); padding: clamp(14px, 2.4vw, 26px); }
 .card { background: var(--bg-card); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-sm); }
-.fig-cap { margin-top: 12px; font-size: .9rem; line-height: 1.58; color: var(--muted); }
+.fig-cap { margin-top: 12px; font-size: var(--fs-cap); line-height: 1.58; color: var(--muted); }
 .fig-cap b { color: var(--ink); font-weight: 600; }
 .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 0; list-style: none; font-size: .82rem; color: var(--text); }
 .legend li { display: inline-flex; align-items: center; gap: 7px; }
@@ -245,14 +292,25 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; ma
 /* fences marked .f come from a math font when one is installed, so they stretch around fractions */
 .eq mo.f { font-family: "STIX Two Math", "Cambria Math", "Latin Modern Math", var(--font-math); }
 .eq .tag { font-size: .8rem; color: var(--muted); }
+/* an equation box in the figure column, with a title; .eq-wide / .eq-narrow are two layouts of one equation, the narrow one for phones */
+.eq--fig { gap: 10px; padding: 16px 20px; }
+.eq--fig .fig-title { text-align: left; }
+.eq--fig .tag { font-size: var(--fs-cap); line-height: 1.55; text-align: left; }
+.eq-narrow { display: none; }
+.eq .lines mtd { padding: 2px 0; }
+.eq .lines > mtr > mtd:first-child { text-align: right; padding-right: .3em; }
+.eq .lines > mtr > mtd:last-child { text-align: left; }
 .eq-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 22px; }
-@media (max-width: 560px) { .eq { padding: 12px 14px; } .eq math { font-size: 1.08rem; } }
+@media (max-width: 560px) { .eq, .eq--fig { padding: 12px 14px; } .eq math, .story .eq math { font-size: 1.08rem; } .eq-wide { display: none; } .eq-narrow { display: revert; } }
+@media (max-width: 380px) { .eq math, .story .eq math { font-size: 1rem; } }
 .tip { position: fixed; z-index: 70; pointer-events: none; background: var(--ink); color: var(--bg); border-radius: 8px; padding: 8px 10px; font: 500 .8rem/1.4 var(--font); box-shadow: var(--shadow-lg); max-width: 260px; opacity: 0; transition: opacity .12s; }
 .tip.on { opacity: 1; }
 .tip b { color: inherit; font-weight: 700; font-variant-numeric: tabular-nums; }
 .tip .row { display: flex; align-items: center; gap: 8px; }
 .tip .key { width: 12px; height: 3px; border-radius: 2px; flex: none; }
-svg text.tick { font: 500 12px var(--font); fill: var(--muted); }
+svg text.tick, svg .tl, svg .tx { font: 500 11.5px var(--font); fill: var(--muted); font-variant-numeric: tabular-nums; }
+svg .tl-ink, svg .tx-ink { font: 600 12px var(--font); fill: var(--text); font-variant-numeric: tabular-nums; }
+svg .vl, svg .tx-strong { font: 700 12.5px var(--font); fill: var(--ink); font-variant-numeric: tabular-nums; }
 svg text.lbl { font: 600 13px var(--font); fill: var(--ink); }
 svg text.val { font: 600 12.5px var(--font); fill: var(--ink); font-variant-numeric: tabular-nums; }
 svg text.val.mut { fill: var(--muted); font-weight: 500; }
@@ -302,9 +360,11 @@ details.more > summary::-webkit-details-marker { display: none; }
 details.more > summary::before { content: ""; width: 6px; height: 6px; margin-top: -2px; border-right: 2px solid var(--blue); border-bottom: 2px solid var(--blue); transform: rotate(-45deg); transition: transform .2s var(--ease); }
 details.more > summary:hover { border-color: var(--blue); }
 details.more[open] > summary { margin-bottom: 16px; }
+/* a fold after the last row of a section */
+details.more.more--after { margin-top: clamp(40px, 5vw, 56px); }
 details.more[open] > summary::before { transform: rotate(45deg); margin-top: -5px; }
 .more-body { display: grid; gap: clamp(26px, 3.4vw, 34px); }
-.more-h { font-family: var(--serif); font-size: 1.12rem; font-weight: 600; }
+.more-h { font-family: var(--display); font-size: 1.15rem; font-weight: 600; }
 .more-p { font-size: .94rem; text-wrap: pretty; }
 
 /* ---------- code & citation ---------- */
@@ -313,9 +373,11 @@ pre.code .c { color: var(--muted); }
 pre.code .f { color: var(--accent-ink); font-weight: 600; }
 pre.code .k { color: var(--blue); font-weight: 600; }
 .code-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.code-grid > div { display: grid; grid-template-rows: auto 1fr; min-width: 0; }
 @media (max-width: 860px) { .code-grid { grid-template-columns: minmax(0, 1fr); } }
 .cite .note { margin-top: 14px; }
-.code-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px; font-size: .86rem; font-weight: 600; color: var(--ink); }
+.code-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px 12px; margin-bottom: 8px; font-size: .86rem; font-weight: 600; color: var(--ink); }
+.code-head code { white-space: normal; overflow-wrap: anywhere; }
 .map td:first-child { white-space: normal; min-width: 170px; color: var(--ink); font-weight: 600; }
 .map td:last-child { white-space: normal; text-align: left; min-width: 260px; }
 .map th:last-child { text-align: left; }
@@ -340,23 +402,32 @@ pre.code .k { color: var(--blue); font-weight: 600; }
 }
 
 /* ===========================================================
-   MuonQ module: gold accent (MuonQ4 in the paper's figures), the kit's wordmark with a gold Q,
-   and the figures. Colors follow the paper: blue = full precision (Muon32), gold = MuonQ4,
-   red = plain 4-bit (Muon4), gray = 8-bit or partial MuonQ.
+   MuonQ module, after the COLM poster: a heavy Newsreader wordmark with a gold Q and the 15 levels
+   of a 4-bit code underneath; the method as one step with three letter-coded changes (N, D, C),
+   each told as problem, fix, equation and one before -> after number next to its figure.
+   Colors follow the paper: blue = full precision (Muon32), gold = MuonQ4, red = plain 4-bit (Muon4),
+   gray = 8-bit or partial MuonQ.
    =========================================================== */
 :root {
+  --display: "Newsreader", Georgia, "Times New Roman", serif;
   --c-fp: var(--series-base); --c-q: var(--series-ours); --c-naive: #cf4458; --c-8: #a3afbc; --c-hist: #9dbbdc;
-  --mq-q: #b57d0a;
+  --mq-q: #c4870c; --badge: #003660; --on-badge: #ffffff;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --c-naive: #e05a70; --c-8: #64768a; --c-hist: #35587e; --mq-q: #ecb642; }
+  :root:not([data-theme="light"]) { --c-naive: #e05a70; --c-8: #64768a; --c-hist: #35587e; --mq-q: #ecb642; --badge: #86b8ea; --on-badge: #05121e; }
 }
-:root[data-theme="dark"] { --c-naive: #e05a70; --c-8: #64768a; --c-hist: #35587e; --mq-q: #ecb642; }
+:root[data-theme="dark"] { --c-naive: #e05a70; --c-8: #64768a; --c-hist: #35587e; --mq-q: #ecb642; --badge: #86b8ea; --on-badge: #05121e; }
 
-/* ---- title art: the kit's wordmark; the Q is gold ---- */
-.title-art .q { color: var(--mq-q); }
+/* ---- title art: the poster's wordmark, and the 15 levels of a 4-bit code (they slide to mu-law spacing) ---- */
+.title-art { font-weight: 800; font-variation-settings: "opsz" 72; letter-spacing: -.025em; color: var(--navy); }
+.title-art .q, .nav__here .q { color: var(--mq-q); }
+.nav__here { font-weight: 700; }
+.ruler { display: block; width: min(380px, 78vw); height: auto; margin-top: 12px; overflow: visible; }
+.ruler .base { stroke: var(--line-strong); stroke-width: 1.5; }
+.ruler .tk { stroke: var(--muted); stroke-width: 2; stroke-linecap: round; }
+.ruler .tk.z { stroke: var(--mq-q); stroke-width: 2.6; }
 
-/* ---- swatches and keys shared by the figures ---- */
+/* ---- shared marks ---- */
 .k-fp { background: var(--c-fp); } .k-q { background: var(--c-q); } .k-naive { background: var(--c-naive); } .k-8 { background: var(--c-8); }
 .bg-fp { background: var(--c-fp); } .bg-q { background: var(--c-q); } .bg-naive { background: var(--c-naive); } .bg-8 { background: var(--c-8); }
 .sw.box-q { background: transparent; box-shadow: inset 0 0 0 2px var(--c-q); }
@@ -368,20 +439,60 @@ pre.code .k { color: var(--blue); font-weight: 600; }
 .tip .lk { width: 12px; height: 3px; border-radius: 2px; flex: none; }
 .tag-ours { display: inline-block; margin-left: 7px; font-size: .64rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--accent-ink); border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent); border-radius: 999px; padding: 1px 6px; vertical-align: 1px; }
 table.t tbody th { white-space: nowrap; }
-
-/* ---- svg chart text and lines ---- */
+.big__v .t-bad { color: var(--c-naive); }
 svg .gl { stroke: var(--line); stroke-width: 1; shape-rendering: crispEdges; }
 svg .ax { stroke: var(--line-strong); stroke-width: 1; shape-rendering: crispEdges; }
-svg .tl { fill: var(--muted); font: 500 11px var(--font); font-variant-numeric: tabular-nums; }
-svg .tl-ink { fill: var(--text); font: 600 11.5px var(--font); }
-svg .vl { fill: var(--ink); font: 700 12px var(--font); font-variant-numeric: tabular-nums; }
 svg .xh { stroke: var(--ink); stroke-width: 1; stroke-opacity: .4; shape-rendering: crispEdges; pointer-events: none; }
 svg .hit { fill: transparent; cursor: crosshair; }
 
-/* ---- first screen: Fig. 3 in four steps ---- */
-.demo-text { min-height: 4.8em; }
-.tz-card { padding: clamp(12px, 2vw, 18px); display: grid; grid-template-columns: minmax(0, 1fr) minmax(180px, 220px); gap: clamp(14px, 2.4vw, 28px); align-items: center; }
-@media (max-width: 760px) { .tz-card { grid-template-columns: minmax(0, 1fr); } }
+/* ---- N / D / C: the poster's letter badges; problem in red, fix in blue ---- */
+.badge { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; background: var(--badge); color: var(--on-badge); font: 700 .78rem/1 var(--font); letter-spacing: 0; text-transform: none; flex: none; }
+.kicker .badge { margin-right: 2px; }
+.pf-p { color: var(--c-naive); font-weight: 700; }
+.pf-f { color: var(--blue); font-weight: 700; }
+.story__text .eq { background: var(--bg-card); border: 1px solid var(--line); }
+
+/* ---- one MuonQ step: G -> N -> D -> C -> 4-bit state, with the update and the next step's read ---- */
+.pipe-head { display: grid; grid-template-columns: minmax(0, var(--col-a)) minmax(0, var(--col-b)); column-gap: var(--col-gap); align-items: baseline; margin-bottom: 16px; }
+.pipe-note { color: var(--text); font-size: var(--fs-body); line-height: 1.6; }
+@media (max-width: 960px) { .pipe-head { grid-template-columns: minmax(0, 1fr); row-gap: 8px; } }
+.pipe { background: var(--bg-soft); border-radius: var(--radius); padding: clamp(16px, 2.6vw, 28px); display: grid; gap: 18px; }
+.pipe__flow { display: grid; grid-template-columns: auto 28px minmax(0, 1fr) 28px minmax(0, 1fr) 28px minmax(0, 1fr) 28px minmax(0, .9fr); align-items: stretch; }
+.pipe__in { align-self: center; font-size: 1.25rem; color: var(--ink); padding-right: 4px; }
+.pipe__arr { position: relative; align-self: center; height: 2px; background: var(--line-strong); margin: 0 4px; }
+.pipe__arr::after { content: ""; position: absolute; right: -1px; top: -4px; border: 5px solid transparent; border-left: 7px solid var(--line-strong); border-right: 0; }
+.pipe__box { display: grid; gap: 4px; align-content: center; padding: 12px 14px; border-radius: 12px; background: var(--bg-card); border: 1px solid var(--line); box-shadow: var(--shadow-sm); color: var(--ink); min-width: 0; transition: border-color .18s, transform .18s var(--ease); }
+a.pipe__box:hover { border-color: var(--blue); transform: translateY(-2px); color: var(--ink); }
+.pipe__box .badge { margin-bottom: 2px; }
+.pipe__t { font-weight: 700; font-size: .95rem; }
+.pipe__f { font-size: 1.05rem; color: var(--text); white-space: normal; }
+.pipe__box--state { background: var(--navy); border-color: var(--navy); color: var(--on-navy); box-shadow: none; }
+.pipe__box--state .pipe__f { color: color-mix(in srgb, var(--on-navy) 80%, transparent); }
+.pipe__sides { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 24px; }
+.pipe__sides p { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; font-size: var(--fs-cap); color: var(--muted); }
+.pipe__sides .m { font-size: 1.05rem; color: var(--ink); }
+.pipe__tag { font: 700 .7rem/1.6 var(--font); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line-strong); border-radius: 999px; padding: 0 8px; }
+.pipe__back .pipe__tag { border-style: dashed; }
+@media (max-width: 760px) {
+  .pipe__flow { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .pipe__in { justify-self: center; padding: 0 0 2px; }
+  .pipe__arr { justify-self: center; width: 2px; height: 18px; margin: 2px 0; }
+  .pipe__arr::after { right: -4px; top: auto; bottom: -2px; border: 5px solid transparent; border-top: 7px solid var(--line-strong); border-bottom: 0; }
+  .pipe__sides { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ---- the problem: Fig. 3 in four steps ---- */
+.demo-text { min-height: 4.9em; margin: 14px 0 10px; font-size: .98rem; }
+.tz-read { margin-top: 10px; display: grid; grid-template-columns: minmax(0, 1.3fr) auto auto; gap: 10px 22px; align-items: end; }
+.tz-cs { display: grid; gap: 4px; min-width: 0; }
+.tz-cs__v { font-family: var(--display); font-size: 1.9rem; font-weight: 700; line-height: 1; color: var(--ink); }
+.meter { display: block; height: 6px; border-radius: 3px; background: var(--bg-soft); border: 1px solid var(--line); overflow: hidden; }
+.meter i { display: block; height: 100%; border-radius: 0 3px 3px 0; background: var(--c-naive); width: 0; transition: width .8s var(--ease), background-color .5s; }
+.meter i.q { background: var(--c-q); }
+.tz-re { display: grid; gap: 4px; }
+.tz-re b { font-family: var(--display); font-size: 1.5rem; font-weight: 700; line-height: 1; }
+.tz-read .legend { flex-direction: column; gap: 4px; }
+@media (max-width: 560px) { .tz-read { grid-template-columns: minmax(0, 1fr) auto; } .tz-read .legend { grid-column: 1 / -1; flex-direction: row; } }
 .tz-sig { stroke: var(--c-fp); stroke-width: 2.2; fill: none; stroke-linejoin: round; }
 .tz-sig-a { fill: var(--c-fp); opacity: .08; }
 .tz-err { stroke: var(--c-naive); stroke-width: 2.2; fill: none; stroke-linejoin: round; }
@@ -392,32 +503,23 @@ svg .hit { fill: transparent; cursor: crosshair; }
 .tz-brk.on { opacity: .8; }
 .tz-zlab { fill: var(--ink); font: 600 12px var(--font); opacity: 0; transition: opacity .5s; paint-order: stroke; stroke: var(--bg-card); stroke-width: 4px; stroke-linejoin: round; }
 .tz-zlab.on { opacity: 1; }
-.tz-side { display: grid; gap: 14px; align-content: center; }
-.meter-k { font-size: .8rem; font-weight: 600; color: var(--muted); display: block; }
-.meter-v { font-size: clamp(2.1rem, 4vw, 2.7rem); font-weight: 700; color: var(--ink); line-height: 1; letter-spacing: -.02em; display: block; margin-top: 6px; }
-.meter { display: block; height: 8px; border-radius: 4px; background: var(--bg-soft); border: 1px solid var(--line); margin-top: 10px; overflow: hidden; }
-.meter i { display: block; height: 100%; border-radius: 0 4px 4px 0; background: var(--c-naive); width: 0; transition: width .8s var(--ease), background-color .5s; }
-.meter i.q { background: var(--c-q); }
-.meter-s { display: block; margin-top: 6px; font-size: .78rem; color: var(--muted); }
-.tz-re { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding-top: 12px; border-top: 1px solid var(--line); font-size: .88rem; color: var(--muted); }
-.tz-re b { font-size: 1.15rem; }
-@media (max-width: 760px) { .tz-side { grid-template-columns: minmax(0, 1fr) auto; align-items: end; } .tz-re { border-top: 0; padding-top: 0; display: grid; gap: 2px; text-align: right; } }
 
-/* ---- step 1: error accumulation ---- */
-.drift-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-@media (max-width: 720px) { .drift-grid { grid-template-columns: minmax(0, 1fr); } }
-.fig-foot { margin-top: 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
-.fig-foot .legend { margin-left: auto; }
-.scrub { flex: 1 1 200px; min-width: 0; display: flex; align-items: center; }
+/* ---- N: error accumulation ---- */
+.drift-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+@media (max-width: 560px) { .drift-grid { grid-template-columns: minmax(0, 1fr); } }
+.fig-title span, .fig-sub span { color: var(--muted); font-weight: 500; margin-left: 6px; font-size: .8rem; }
+.chart-mini .fig-title { margin-bottom: 4px; }
+.fig-foot { margin-top: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+#drift .legend, #factor .legend { margin-top: 10px; }
+.scrub { flex: 1 1 160px; min-width: 0; display: flex; align-items: center; }
 .scrub input { flex: 1 1 auto; min-width: 0; }
-.stepread { font-size: .84rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.stepread { font-size: var(--fs-cap); color: var(--muted); font-variant-numeric: tabular-nums; }
 .stepread b { color: var(--ink); }
 .dr-wo { stroke: var(--c-naive); } .dr-w { stroke: var(--c-q); }
 .dr-line { fill: none; stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
 .dr-dot-wo { fill: var(--c-naive); stroke: var(--bg-card); stroke-width: 2; } .dr-dot-w { fill: var(--c-q); stroke: var(--bg-card); stroke-width: 2; }
 
-/* ---- step 2: what MuonQ stores ---- */
-.fac-card { padding: 8px clamp(8px, 2vw, 18px); }
+/* ---- D: what MuonQ stores ---- */
 .fac-grp { transition: opacity .6s, transform .8s var(--ease); }
 .fac-lbl { fill: var(--text); font: 600 13px var(--font); }
 .fac-sub { fill: var(--muted); font: 500 11.5px var(--font); }
@@ -427,11 +529,7 @@ svg .hit { fill: transparent; cursor: crosshair; }
 .fac-chipt { fill: var(--ink); font: 700 11px var(--font); opacity: 0; transition: opacity .35s; }
 .fac-chipt.on { opacity: 1; }
 
-/* ---- step 3: even vs mu-law levels ---- */
-.cp-grid { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr); gap: 14px; align-items: start; }
-@media (max-width: 900px) { .cp-grid { grid-template-columns: minmax(0, 1fr); } }
-.cp-card { padding: 12px clamp(8px, 1.6vw, 14px) 6px; }
-.cp-side { display: grid; gap: 14px; min-width: 0; }
+/* ---- C: even vs mu-law levels ---- */
 .cp-hist { fill: var(--c-hist); }
 .cp-lv { stroke-width: 1.6; }
 .cp-lv.uni, .cp-fan.uni { stroke: var(--c-naive); }
@@ -440,14 +538,14 @@ svg .hit { fill: transparent; cursor: crosshair; }
 .cp-bar.uni { fill: var(--c-naive); } .cp-bar.mu { fill: var(--c-q); }
 .cp-code { fill: var(--bg-soft); stroke: var(--line-strong); stroke-width: 1; }
 .cp-code-t { fill: var(--muted); font: 600 10px var(--font); font-variant-numeric: tabular-nums; }
-.cp-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.cp-stat { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: var(--bg-card); box-shadow: var(--shadow-sm); }
+.cp-stats { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px 16px; }
+@media (max-width: 560px) { .cp-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .cp-stat .k { font-size: .76rem; font-weight: 600; color: var(--muted); line-height: 1.35; display: block; }
-.cp-stat .v { font-size: 1.45rem; font-weight: 700; color: var(--ink); display: block; margin-top: 4px; line-height: 1.1; font-variant-numeric: tabular-nums; }
-.cp-stat .o { font-size: .76rem; color: var(--muted); display: block; margin-top: 2px; font-variant-numeric: tabular-nums; }
+.cp-stat .v { font-family: var(--display); font-size: 1.5rem; font-weight: 700; color: var(--ink); display: block; margin-top: 2px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.cp-stat .o { font-size: .74rem; color: var(--muted); display: block; margin-top: 2px; font-variant-numeric: tabular-nums; }
 
 /* ---- Algorithm 1 ---- */
-.algo { padding: 18px 20px; font-family: var(--font-math); font-size: 1.04rem; line-height: 1.7; color: var(--ink); overflow-x: auto; }
+.algo { font-family: var(--font-math); font-size: 1.04rem; line-height: 1.7; color: var(--ink); overflow-x: auto; }
 .algo__in { font-family: var(--font); font-size: .84rem; color: var(--muted); line-height: 1.55; padding-bottom: 12px; margin-bottom: 8px; border-bottom: 1px solid var(--line); }
 .algo__in b { color: var(--text); }
 .algo .ln { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 12px; padding: 2px 8px; margin: 0 -8px; border-radius: 8px; transition: background-color .3s; white-space: nowrap; }
@@ -461,48 +559,47 @@ svg .hit { fill: transparent; cursor: crosshair; }
 .algo .ph-h { display: flex; align-items: center; gap: 9px; margin: 12px 0 4px; padding-top: 10px; border-top: 1px dashed var(--line-strong); font-family: var(--font); font-size: .8rem; font-weight: 700; color: var(--ink); }
 .algo .ph-h a { color: var(--ink); display: inline-flex; align-items: center; gap: 9px; }
 .algo .ph-h a:hover { color: var(--blue); }
-.algo .ph-h .pn { width: 20px; height: 20px; border-radius: 50%; display: inline-grid; place-items: center; background: var(--navy); color: var(--on-navy); font-size: .7rem; flex: none; }
+.algo .ph-h .pn { width: 20px; height: 20px; border-radius: 5px; display: inline-grid; place-items: center; background: var(--badge); color: var(--on-badge); font-size: .7rem; flex: none; }
 .algo .ph-h .pn.u { background: var(--bg-soft); color: var(--muted); border: 1px solid var(--line-strong); }
 .acc { position: relative; display: inline-block; }
 .acc::after { position: absolute; left: 0; right: 0; text-align: center; font-style: normal; font-weight: 500; pointer-events: none; line-height: 1; }
 .acc.h::after { content: "\02C6"; top: .02em; padding-left: .24em; font-size: .95em; }
 .acc.b::after { content: ""; top: .02em; left: .26em; right: .04em; border-top: .07em solid currentColor; }
 
-/* ---- results: perplexity and memory ---- */
-.qm-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-@media (max-width: 760px) { .qm-grid { grid-template-columns: minmax(0, 1fr); } }
-.qbar { display: grid; grid-template-columns: 74px minmax(0, 1fr); gap: 10px; align-items: center; margin-bottom: 8px; font-size: .84rem; }
-.qbar .lab { font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 7px; white-space: nowrap; }
-.qbar.is-q .lab { color: var(--ink); }
-.qbar .track { position: relative; height: 22px; display: flex; align-items: center; gap: 8px; }
-.qbar .bar { height: 18px; border-radius: 0 4px 4px 0; width: 0; transition: width .75s var(--ease); flex: none; }
-.qbar .val { font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; font-size: .84rem; white-space: nowrap; }
-.qm-axis { position: relative; height: 18px; margin-left: 84px; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.qm-axis .qm-line { position: absolute; left: 0; top: 0; height: 0; border-top: 1px solid var(--line-strong); }
-.qm-axis span.t { position: absolute; top: 3px; transform: translateX(-50%); }
+/* ---- results: perplexity against memory ---- */
+.sc-ref { stroke: var(--c-fp); stroke-width: 1.4; stroke-dasharray: 5 5; opacity: .7; }
+.sc-arrow { fill: none; stroke: var(--c-q); stroke-width: 2; }
+.sc-head { fill: var(--c-q); }
+.sc-gain { fill: var(--accent-ink); font: 700 12.5px var(--font); paint-order: stroke; stroke: var(--bg-card); stroke-width: 4px; stroke-linejoin: round; }
+.sc-dot { stroke: var(--bg-card); stroke-width: 2.5; }
+.sc-fp { fill: var(--c-fp); } .sc-8 { fill: var(--c-8); } .sc-naive { fill: var(--c-naive); } .sc-q { fill: var(--c-q); }
+.sc-grasp { fill: var(--bg-card); stroke: var(--muted); stroke-width: 2; }
 
-/* ---- more results ---- */
+/* ---- results: training curves, zero-shot, ablation ---- */
 .tabs-img { position: relative; }
 .tabs-img img { transition: opacity .45s; }
 .tabs-img img + img { position: absolute; inset: 10px; width: calc(100% - 20px); }
 .tabs-img img.off { opacity: 0; pointer-events: none; }
+.story__text .seg { justify-self: start; }
 .db-dot-fp { fill: var(--c-fp); } .db-dot-q { fill: var(--c-q); } .db-dot-naive { fill: var(--c-naive); }
 .db-dot { stroke: var(--bg-card); stroke-width: 2; }
 .db-track { stroke: var(--line-strong); stroke-width: 2; }
 .db-gain { stroke: var(--c-q); stroke-width: 6; opacity: .3; stroke-linecap: round; }
-.wf-row { display: grid; grid-template-columns: minmax(150px, 210px) minmax(0, 1fr) 76px; gap: 12px; align-items: center; padding: 7px 0; font-size: .88rem; border-bottom: 1px solid var(--line); }
+#r-zs .legend { margin-bottom: 6px; }
+.wf-row { display: grid; grid-template-columns: minmax(120px, 170px) minmax(0, 1fr) 70px; gap: 12px; align-items: center; padding: 7px 0; font-size: .86rem; border-bottom: 1px solid var(--line); }
 .wf-row:last-of-type { border-bottom: 0; }
 .wf-row .lab { color: var(--text); font-weight: 600; }
-.wf-row .lab small { display: block; color: var(--muted); font-weight: 500; font-size: .78rem; }
+.wf-row .lab small { display: block; color: var(--muted); font-weight: 500; font-size: .76rem; }
 .wf-track { position: relative; height: 24px; }
 .wf-bar { position: absolute; left: 0; top: 3px; height: 18px; border-radius: 0 4px 4px 0; transition: width .8s var(--ease); }
 .wf-gone { position: absolute; top: 3px; height: 18px; border-radius: 0 4px 4px 0; background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--c-naive) 34%, transparent) 0 2px, transparent 2px 6px); transition: left .8s var(--ease), width .8s var(--ease), opacity .4s; }
 .wf-ref { position: absolute; top: -6px; bottom: -6px; width: 0; border-left: 2px solid var(--c-fp); pointer-events: none; }
 .wf-val { font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
-.wf-val small { display: block; font-weight: 500; color: var(--muted); font-size: .76rem; }
+.wf-val small { display: block; font-weight: 500; color: var(--muted); font-size: .74rem; }
 .wf-pill { position: absolute; top: 2px; font: 700 .74rem/20px var(--font); color: var(--ink); white-space: nowrap; transition: left .8s var(--ease), opacity .4s; padding-left: 6px; }
 .wf-axis { position: relative; height: 18px; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .wf-axis span { position: absolute; top: 2px; transform: translateX(-50%); }
+#wf .legend { margin-top: 10px; }
 @media (max-width: 640px) {
   .wf-row { grid-template-columns: minmax(0, 1fr) auto; }
   .wf-row .wf-track { grid-column: 1 / -1; grid-row: 2; }
@@ -511,14 +608,10 @@ svg .hit { fill: transparent; cursor: crosshair; }
 .rk-line { fill: none; stroke: var(--c-q); stroke-width: 2.2; stroke-linejoin: round; }
 .rk-dot { fill: var(--c-q); stroke: var(--bg-card); stroke-width: 2; }
 .rk-def { fill: none; stroke: var(--ink); stroke-width: 1.5; }
-.grid2 { align-items: center; }
-.curves { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); align-items: center; }
-@media (max-width: 860px) { .curves { grid-template-columns: minmax(0, 1fr); } }
-.curves-text { display: grid; gap: 12px; }
-.curves-text .seg { justify-self: start; }
+.grid2.rank { align-items: center; }
 
 @media (prefers-reduced-motion: reduce) {
-  .meter i, .qbar .bar, .wf-bar, .wf-gone, .wf-pill, .fac-grp, .fac-box, .fac-chipt, .tz-zone, .tz-brk, .tz-zlab, .algo .ln, .tabs-img img { transition: none !important; }
+  .meter i, .wf-bar, .wf-gone, .wf-pill, .fac-grp, .fac-box, .fac-chipt, .tz-zone, .tz-brk, .tz-zlab, .algo .ln, .tabs-img img, .pipe__box { transition: none !important; }
 }
 
 </style>
@@ -527,9 +620,8 @@ svg .hit { fill: transparent; cursor: crosshair; }
 <body>
 <header class="nav" id="nav">
   <div class="wrap nav__wrap">
-    <p class="nav__brand"><a class="nav__home" href="https://yupengsu.github.io/">Yupeng Su</a><span class="nav__sep" aria-hidden="true">/</span><a class="nav__here" href="#top">MuonQ</a></p>
+    <p class="nav__brand"><a class="nav__home" href="https://yupengsu.github.io/">Yupeng Su</a><span class="nav__sep" aria-hidden="true">/</span><a class="nav__here" href="#top" aria-label="MuonQ">Muon<span class="q">Q</span></a></p>
     <nav class="nav__links" id="navLinks" aria-label="Sections">
-      <a href="#demo">Demo</a>
       <a href="#method">Method</a>
       <a href="#results">Results</a>
       <a href="#code">Code</a>
@@ -542,6 +634,7 @@ svg .hit { fill: transparent; cursor: crosshair; }
 <header class="hero wrap" id="top">
   <p class="hero__venue"><span class="shield"><span class="shield__k">CoLM</span><span class="shield__v">2026</span></span><span>Conference on Language Modeling, San Francisco</span></p>
   <h1 class="title-art">Muon<span class="q">Q</span></h1>
+  <svg class="ruler" id="ruler" viewBox="0 0 380 30" aria-hidden="true"></svg>
   <p class="hero__subtitle">Enhancing <span class="nw">Low-Bit</span> Muon Quantization via Directional Fidelity Optimization</p>
   <p class="hero__tagline">MuonQ keeps the Muon optimizer&#x27;s momentum in 4 bits without losing the direction of its updates.</p>
   <ul class="hero__authors" aria-label="Authors">
@@ -562,147 +655,174 @@ svg .hit { fill: transparent; cursor: crosshair; }
   </div>
 </header>
 <main>
-<section class="demo-sec" id="demo" aria-labelledby="demo-h">
-  <div class="wrap">
-    <h2 class="sr-only" id="demo-h">Where 4-bit Muon loses its direction</h2>
-    <figure class="bench demo" id="teaser">
-      <div class="demo-head">
-        <ol class="demo-steps" id="tz-steps" aria-label="Steps of the figure"></ol>
-        <div class="demo-ctl">
-          <button class="btn btn--sm" type="button" id="tz-play" aria-pressed="false">Pause</button>
-          <button class="btn btn--sm" type="button" id="tz-replay">Replay</button>
-        </div>
-      </div>
-      <p class="demo-text" id="tz-text" aria-live="polite"></p>
-      <div class="card tz-card">
-        <div class="tz-plot chart">
-          <svg id="tzSvg" viewBox="0 0 640 310" role="img" aria-label="Singular-value spectra of a momentum matrix and of its 4-bit rounding error, before and after Muon's polar step, for plain 4-bit storage and for MuonQ."></svg>
-        </div>
-        <div class="tz-side">
-          <div>
-            <span class="meter-k">Direction kept</span>
-            <span class="meter-v num" id="tzCS">0.994</span>
-            <span class="meter" aria-hidden="true"><i id="tzMeter"></i></span>
-            <span class="meter-s">cosine similarity to full precision</span>
-          </div>
-          <div class="tz-re"><span>Relative error</span><b class="num" id="tzRE">0.110</b></div>
-        </div>
-      </div>
-      <div class="demo-foot">
-        <ul class="legend" aria-label="Legend">
-          <li><span class="sw line k-fp"></span>Momentum (signal)</li>
-          <li><span class="sw line k-naive"></span>4-bit rounding error</li>
-        </ul>
-        <p class="note">Hover the plot to read single directions.</p>
-      </div>
-    </figure>
-    <p class="fig-cap">One real layer, <code>layers.6.self_attn.k_proj</code>: the 512 singular directions of its momentum, strongest first, and of the 4-bit rounding error, traced from Fig. 3 of the paper. Relative error and cosine similarity are the paper's values.</p>
-  </div>
-</section>
-
 <section class="section" id="method" aria-labelledby="method-h">
   <div class="wrap">
-    <div class="section__head prose">
+    <div class="sec-head">
       <h2 class="section__title" id="method-h">Method</h2>
-      <p>Muon updates the weights with the polar factor of its momentum: it keeps every direction of the momentum and gives each the same strength. A 4-bit copy of the momentum therefore has to point the right way, not just be numerically close. MuonQ keeps Muon's update and changes how the momentum is normalized, split and rounded each time it is stored in 4 bits:</p>
-      <div class="eq" role="group" aria-label="Muon's weight update">
-        <math display="block"><mrow><msub><mi>W</mi><mi>t</mi></msub><mo>=</mo><msub><mi>W</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>−</mo><mi>η</mi><mo>·</mo><mi>polar</mi><mo>(</mo><msub><mover accent="true"><mi>M</mi><mo>¯</mo></mover><mi>t</mi></msub><mo>)</mo></mrow></math>
+      <p class="lede">Muon keeps only the directions of its momentum. MuonQ stores that momentum in 4 bits so the directions survive.</p>
+    </div>
+
+    <div class="story" id="why">
+      <div class="story__text story__text--sticky">
+        <span class="kicker">The problem</span>
+        <h3 class="story__title">Rounding error that the polar step amplifies</h3>
+        <p>Muon updates the weights with the polar factor of its momentum. It keeps every singular direction and gives each the same strength:</p>
+        <div class="eq" role="group" aria-label="Muon's weight update">
+          <math display="block"><mrow><msub><mi>W</mi><mi>t</mi></msub><mo>=</mo><msub><mi>W</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>−</mo><mi>η</mi><mo>·</mo><mi>polar</mi><mo>(</mo><msub><mi>M</mi><mi>t</mi></msub><mo>)</mo></mrow></math>
+        </div>
+        <p>In a plain 4-bit copy the weak directions are mostly rounding error. The copy still looks right, but the polar step lifts those directions to full strength.</p>
+        <div class="big"><span class="big__v"><span class="from">0.994</span><span class="arr">→</span><span class="to t-bad">0.674</span></span><span class="big__l">cosine similarity to full precision, before → after the polar step, plain 4-bit</span></div>
+        <p>So MuonQ quantizes for <b>directional fidelity</b>, the cosine similarity, instead of numerical error.</p>
+      </div>
+      <figure class="story__fig">
+        <div class="panel demo" id="teaser">
+          <div class="demo-head">
+            <ol class="demo-steps" id="tz-steps" aria-label="Steps of the figure"></ol>
+            <div class="demo-ctl">
+              <button class="btn btn--sm" type="button" id="tz-play" aria-pressed="false">Pause</button>
+              <button class="btn btn--sm" type="button" id="tz-replay">Replay</button>
+            </div>
+          </div>
+          <p class="demo-text" id="tz-text" aria-live="polite"></p>
+          <div class="tz-plot chart">
+            <svg id="tzSvg" viewBox="0 0 640 310" role="img" aria-label="Singular-value spectra of a momentum matrix and of its 4-bit rounding error, before and after Muon's polar step, for plain 4-bit storage and for MuonQ."></svg>
+          </div>
+          <div class="tz-read">
+            <div class="tz-cs"><span class="ctl-label">Direction kept</span><span class="tz-cs__v num" id="tzCS">0.994</span><span class="meter" aria-hidden="true"><i id="tzMeter"></i></span></div>
+            <div class="tz-re"><span class="ctl-label">Relative error</span><b class="num" id="tzRE">0.110</b></div>
+            <ul class="legend" aria-label="Legend">
+              <li><span class="sw line k-fp"></span>Momentum</li>
+              <li><span class="sw line k-naive"></span>4-bit rounding error</li>
+            </ul>
+          </div>
+        </div>
+        <figcaption class="fig-cap">One real layer, <code>layers.6.self_attn.k_proj</code>: its 512 singular directions, strongest first, and the 4-bit rounding error, traced from Fig. 3 of the paper. Hover the plot to read single directions.</figcaption>
+      </figure>
+    </div>
+
+    <div class="wide" id="overview">
+      <div class="pipe-head">
+        <span class="kicker">One MuonQ step</span>
+        <p class="pipe-note">Three changes, at the three points where error enters a step. The weight update stays Muon's.</p>
+      </div>
+      <div class="pipe" role="group" aria-label="One MuonQ training step">
+        <div class="pipe__flow">
+          <span class="pipe__in"><span class="m">G<sub>t</sub></span></span>
+          <span class="pipe__arr" aria-hidden="true"></span>
+          <a class="pipe__box" href="#step-n"><span class="badge">N</span><span class="pipe__t">Normalize</span><span class="pipe__f m">M<sub>t</sub> <span class="u">/ ‖</span>M<sub>t</sub><span class="u">‖</span></span></a>
+          <span class="pipe__arr" aria-hidden="true"></span>
+          <a class="pipe__box" href="#step-d"><span class="badge">D</span><span class="pipe__t">Decompose</span><span class="pipe__f m">U<sub>k</sub>S<sub>k</sub> <span class="u">+</span> R<sub>k</sub></span></a>
+          <span class="pipe__arr" aria-hidden="true"></span>
+          <a class="pipe__box" href="#step-c"><span class="badge">C</span><span class="pipe__t">Compand</span><span class="pipe__f m">Quant<sub>4</sub><span class="u">(</span>f<span class="u">(·))</span></span></a>
+          <span class="pipe__arr" aria-hidden="true"></span>
+          <span class="pipe__box pipe__box--state"><span class="pipe__t">4-bit state</span><span class="pipe__f m">U<sub>k</sub>, S<sub>k</sub>, R<sub>k</sub></span></span>
+        </div>
+        <div class="pipe__sides">
+          <p class="pipe__update"><span class="pipe__tag">update</span><span class="m">W<sub>t</sub> <span class="u">=</span> W<sub>t−1</sub> <span class="u">−</span> η <span class="u">·</span> polar<span class="u">(</span><span class="acc b">M</span><sub>t</sub><span class="u">)</span></span><span class="pipe__c">from the normalized momentum, as in Muon</span></p>
+          <p class="pipe__back"><span class="pipe__tag">next step</span><span class="m"><span class="acc h">M</span><sub>t</sub> <span class="u">=</span> <span class="acc h">U</span><span class="acc h">S</span> <span class="u">+</span> <span class="acc h">R</span></span><span class="pipe__c">dequantized from the 4-bit state</span></p>
+        </div>
       </div>
     </div>
-    <ol class="steps">
-      <li class="step" id="step-norm">
-        <h3 class="sub__title step__head"><span class="step__n" aria-hidden="true">1</span>Normalize the gradient and the momentum</h3>
-        <div class="prose"><p>A 4-bit scale follows the largest values, so each step's rounding error grows and shrinks with the gradient norm, and over many steps the errors drift in one direction. MuonQ scales the gradient and the momentum to unit Frobenius norm before quantizing, so every step adds an error of the same size:</p></div>
+
+    <div class="story" id="step-n">
+      <div class="story__text story__text--sticky">
+        <span class="kicker"><span class="badge">N</span>Normalize</span>
+        <h3 class="story__title">Give every step the same rounding error</h3>
+        <p><b class="pf-p">Problem.</b> A 4-bit scale follows the largest value, so each step's error grows and shrinks with the gradient norm. Over many steps the errors add up in one direction.</p>
+        <p><b class="pf-f">Fix.</b> Scale the gradient and the momentum to unit norm before quantizing:</p>
         <div class="eq" role="group" aria-label="Pre-quantization normalization">
-          <math display="block"><mrow><msub><mi>M</mi><mi>t</mi></msub><mo>=</mo><mi>β</mi><msub><mover accent="true"><mi>M</mi><mo>&#x2C6;</mo></mover><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>+</mo><mfrac><msub><mi>G</mi><mi>t</mi></msub><msub><mrow><mo stretchy="false">‖</mo><msub><mi>G</mi><mi>t</mi></msub><mo stretchy="false">‖</mo></mrow><mi mathvariant="normal">F</mi></msub></mfrac><mo>,</mo><mspace width="1.4em"></mspace><msub><mover accent="true"><mi>M</mi><mo>¯</mo></mover><mi>t</mi></msub><mo>=</mo><mfrac><msub><mi>M</mi><mi>t</mi></msub><msub><mrow><mo stretchy="false">‖</mo><msub><mi>M</mi><mi>t</mi></msub><mo stretchy="false">‖</mo></mrow><mi mathvariant="normal">F</mi></msub></mfrac></mrow></math>
+          <math display="block"><mrow><msub><mi>M</mi><mi>t</mi></msub><mo>=</mo><mi>β</mi><msub><mover accent="true"><mi>M</mi><mo>&#x2C6;</mo></mover><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>+</mo><mfrac><msub><mi>G</mi><mi>t</mi></msub><msub><mrow><mo stretchy="false">‖</mo><msub><mi>G</mi><mi>t</mi></msub><mo stretchy="false">‖</mo></mrow><mi mathvariant="normal">F</mi></msub></mfrac><mo>,</mo><mspace width="1.2em"></mspace><msub><mover accent="true"><mi>M</mi><mo>¯</mo></mover><mi>t</mi></msub><mo>=</mo><mfrac><msub><mi>M</mi><mi>t</mi></msub><msub><mrow><mo stretchy="false">‖</mo><msub><mi>M</mi><mi>t</mi></msub><mo stretchy="false">‖</mo></mrow><mi mathvariant="normal">F</mi></msub></mfrac></mrow></math>
         </div>
-        <figure class="bench" id="drift">
+        <div class="big"><span class="big__v"><span class="from">0.16</span><span class="arr">→</span><span class="to">0.90</span></span><span class="big__l">cosine similarity after 50 steps, without → with normalization</span></div>
+      </div>
+      <figure class="story__fig">
+        <div class="panel" id="drift">
           <div class="drift-grid">
-            <div class="card chart-card"><h4>Relative error</h4><p class="sub-l">lower is better</p><div class="plot chart"><svg id="drRE" viewBox="0 0 340 210" role="img" aria-label="Relative error over 50 steps: without normalization it rises from 0.25 to about 1.27; with normalization it settles near 0.45."></svg></div></div>
-            <div class="card chart-card"><h4>Cosine similarity</h4><p class="sub-l">higher is better</p><div class="plot chart"><svg id="drCS" viewBox="0 0 340 210" role="img" aria-label="Cosine similarity over 50 steps: without normalization it falls from 0.97 to about 0.17; with normalization it stays near 0.90."></svg></div></div>
+            <div class="chart-mini"><p class="fig-title">Relative error <span>lower is better</span></p><div class="chart"><svg id="drRE" viewBox="0 0 340 210" role="img" aria-label="Relative error over 50 steps: without normalization it rises from 0.25 to about 1.27; with normalization it settles near 0.45."></svg></div></div>
+            <div class="chart-mini"><p class="fig-title">Cosine similarity <span>higher is better</span></p><div class="chart"><svg id="drCS" viewBox="0 0 340 210" role="img" aria-label="Cosine similarity over 50 steps: without normalization it falls from 0.97 to about 0.16; with normalization it stays near 0.90."></svg></div></div>
           </div>
           <div class="fig-foot">
             <button class="btn btn--sm" type="button" id="drPlay">Replay</button>
             <label class="scrub"><span class="sr-only">Training step</span><input type="range" id="drStep" min="1" max="50" step="1" value="50"></label>
             <span class="stepread" id="drRead">Step <b>50</b> of 50</span>
-            <ul class="legend" aria-label="Legend"><li><span class="sw line k-naive"></span>Without normalization</li><li><span class="sw line k-q"></span>With normalization (MuonQ)</li></ul>
           </div>
-        </figure>
-        <p class="fig-cap">Error of the stored momentum against the full-precision trajectory over 50 steps of plain 4-bit storage, traced from Fig. 1 of the paper. On full-precision Muon the normalization leaves the loss curve unchanged (mean absolute difference 0.003), so its gain comes from how rounding error accumulates.</p>
-      </li>
+          <ul class="legend" aria-label="Legend"><li><span class="sw line k-naive"></span>Without normalization</li><li><span class="sw line k-q"></span>With normalization (MuonQ)</li></ul>
+        </div>
+        <figcaption class="fig-cap">Error of the stored momentum against the full-precision trajectory, plain 4-bit storage, traced from Fig. 1 of the paper. On full-precision Muon the normalization leaves the loss unchanged (mean difference 0.003), so the gain is in how rounding error accumulates.</figcaption>
+      </figure>
+    </div>
 
-      <li class="step" id="step-decomp">
-        <h3 class="sub__title step__head"><span class="step__n" aria-hidden="true">2</span>Store the strongest directions separately</h3>
-        <div class="prose"><p>With one scale for the whole matrix, the weak directions sink into rounding error and the polar step gives them full weight, as in the first figure. MuonQ splits off the top-<span class="m">k</span> singular directions with one warm-started power-iteration step and gives each its own 4-bit scale, <span class="m">U</span> per column and <span class="m">S</span> per row; the small residual <span class="m">R</span> shares one scale:</p></div>
+    <div class="story" id="step-d">
+      <div class="story__text story__text--sticky">
+        <span class="kicker"><span class="badge">D</span>Decompose</span>
+        <h3 class="story__title">Give each strong direction its own scale</h3>
+        <p><b class="pf-p">Problem.</b> With one scale for the whole matrix, the weak directions sink into rounding error, and the polar step gives them full weight.</p>
+        <p><b class="pf-f">Fix.</b> Split off the top-<span class="m">k</span> singular directions with one warm-started power step. <span class="m">U</span> gets a scale per column, <span class="m">S</span> per row; the small residual <span class="m">R</span> shares one:</p>
         <div class="eq eq-row" role="group" aria-label="Structural decomposition by one power-iteration step">
           <math display="block"><mrow><msub><mover accent="true"><mi>M</mi><mo>¯</mo></mover><mi>t</mi></msub><mo>=</mo><msub><mi>U</mi><mi>t</mi></msub><msub><mi>S</mi><mi>t</mi></msub><mo>+</mo><msub><mi>R</mi><mi>t</mi></msub><mo>,</mo></mrow></math>
-          <math display="block"><mrow><msub><mi>U</mi><mi>t</mi></msub><mo>=</mo><mi>orth</mi><mo>(</mo><msub><mover accent="true"><mi>M</mi><mo>¯</mo></mover><mi>t</mi></msub><msubsup><mi>V</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow><mo>⊤</mo></msubsup><mo>)</mo><mo>,</mo><mspace width="0.6em"></mspace><msub><mi>S</mi><mi>t</mi></msub><mo>=</mo><msubsup><mi>U</mi><mi>t</mi><mo>⊤</mo></msubsup><msub><mover accent="true"><mi>M</mi><mo>¯</mo></mover><mi>t</mi></msub><mo>,</mo></mrow></math>
-          <math display="block"><mrow><msub><mi>V</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>=</mo><mi>RowNorm</mi><mo>(</mo><msub><mover accent="true"><mi>S</mi><mo>&#x2C6;</mo></mover><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>)</mo></mrow></math>
+          <math display="block"><mrow><msub><mi>U</mi><mi>t</mi></msub><mo>=</mo><mi>orth</mi><mo>(</mo><msub><mover accent="true"><mi>M</mi><mo>¯</mo></mover><mi>t</mi></msub><msubsup><mi>V</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow><mo>⊤</mo></msubsup><mo>)</mo><mo>,</mo><mspace width="0.6em"></mspace><msub><mi>S</mi><mi>t</mi></msub><mo>=</mo><msubsup><mi>U</mi><mi>t</mi><mo>⊤</mo></msubsup><msub><mover accent="true"><mi>M</mi><mo>¯</mo></mover><mi>t</mi></msub></mrow></math>
         </div>
-        <figure class="bench" id="factor">
+        <div class="big"><span class="big__v"><span class="from">0.674</span><span class="arr">→</span><span class="to">0.982</span></span><span class="big__l">cosine similarity after the polar step, without → with decomposition</span></div>
+        <p class="note"><span class="m">k</span> = min<span class="u">(</span>m, n<span class="u">)</span>/16 for every layer: 9.4% more optimizer memory on GPT-2 Small. <span class="m">V</span><sub>t−1</sub> is <span class="m">Ŝ</span><sub>t−1</sub> with unit rows.</p>
+      </div>
+      <figure class="story__fig">
+        <div class="panel" id="factor">
           <div class="fig-head">
             <p class="fig-sub" id="facSub">The unit-norm momentum of one layer</p>
             <button class="btn btn--sm" type="button" id="facPlay">Replay</button>
           </div>
-          <div class="card fac-card"><div class="chart"><svg id="facSvg" viewBox="0 0 640 230" role="img" aria-label="A momentum matrix is split into U, a tall matrix with k columns, times S, a wide matrix with k rows, plus a residual R. Each column of U and each row of S gets its own 4-bit scale; R gets one scale."></svg></div></div>
-          <ul class="legend" style="margin-top:12px" aria-label="Legend"><li><span class="sw k-fp"></span>Larger magnitude</li><li><span class="sw box-q"></span>One 4-bit scale (quantization group)</li></ul>
-        </figure>
-        <p class="fig-cap">Schematic on a 10 × 16 matrix with <span class="m">k</span> = 3. MuonQ uses <span class="m">k</span> = min<span class="u">(</span>m, n<span class="u">)</span>/16 for every layer, which adds 9.4% optimizer memory on GPT-2 Small.</p>
-      </li>
-
-      <li class="step" id="step-compand">
-        <h3 class="sub__title step__head"><span class="step__n" aria-hidden="true">3</span>Spend the 4-bit levels where the values are</h3>
-        <div class="prose"><p>Momentum values crowd around zero with a few large outliers, so evenly spaced levels stretch to cover the outliers and leave the dense center only a few codes. MuonQ applies μ-law companding before rounding and its inverse after, which packs the levels near zero:</p></div>
-        <div class="eq" role="group" aria-label="The mu-law compressing function">
-          <math display="block"><mrow><mi>f</mi><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><mi>sgn</mi><mo>(</mo><mi>x</mi><mo>)</mo><mo>·</mo><mfrac><mrow><mi>ln</mi><mo>(</mo><mn>1</mn><mo>+</mo><mi>μ</mi><mo stretchy="false" lspace="0" rspace="0">|</mo><mi>x</mi><mo stretchy="false" lspace="0" rspace="0">|</mo><mo>)</mo></mrow><mrow><mi>ln</mi><mo>(</mo><mn>1</mn><mo>+</mo><mi>μ</mi><mo>)</mo></mrow></mfrac><mo>,</mo><mspace width="1.4em"></mspace><mi>μ</mi><mo>=</mo><mn>255</mn></mrow></math>
+          <div class="chart"><svg id="facSvg" viewBox="0 0 640 230" role="img" aria-label="A momentum matrix is split into U, a tall matrix with k columns, times S, a wide matrix with k rows, plus a residual R. Each column of U and each row of S gets its own 4-bit scale; R gets one scale."></svg></div>
+          <ul class="legend" aria-label="Legend"><li><span class="sw k-fp"></span>Larger magnitude</li><li><span class="sw box-q"></span>One 4-bit scale</li></ul>
         </div>
-        <figure class="bench" id="compand">
+        <figcaption class="fig-cap">Schematic on a 10 × 16 matrix with <span class="m">k</span> = 3. An error inside one direction's group mostly changes its strength, and the polar step resets every strength anyway.</figcaption>
+      </figure>
+    </div>
+
+    <div class="story" id="step-c">
+      <div class="story__text story__text--sticky">
+        <span class="kicker"><span class="badge">C</span>Compand</span>
+        <h3 class="story__title">Spend the 15 levels where the values are</h3>
+        <p><b class="pf-p">Problem.</b> Momentum values crowd around zero with a few large outliers. Evenly spaced levels stretch to cover the outliers and leave the dense center only a few codes.</p>
+        <p><b class="pf-f">Fix.</b> Compress with μ-law before rounding and expand after, which packs the levels near zero:</p>
+        <div class="eq" role="group" aria-label="The mu-law compressing function">
+          <math display="block"><mrow><mi>f</mi><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><mi>sgn</mi><mo>(</mo><mi>x</mi><mo>)</mo><mo>·</mo><mfrac><mrow><mi>ln</mi><mo>(</mo><mn>1</mn><mo>+</mo><mi>μ</mi><mo stretchy="false" lspace="0" rspace="0">|</mo><mi>x</mi><mo stretchy="false" lspace="0" rspace="0">|</mo><mo>)</mo></mrow><mrow><mi>ln</mi><mo>(</mo><mn>1</mn><mo>+</mo><mi>μ</mi><mo>)</mo></mrow></mfrac><mo>,</mo><mspace width="1.2em"></mspace><mi>μ</mi><mo>=</mo><mn>255</mn></mrow></math>
+        </div>
+        <div class="big"><span class="big__v"><span class="from">0.879</span><span class="arr">→</span><span class="to">0.973</span></span><span class="big__l">cosine similarity on <code>layers.0.self_attn.k_proj</code> with one scale, even → μ-law levels (Table 1)</span></div>
+        <p class="note">Per row 0.992 → 0.994, per column 0.969 → 0.988: μ-law helps at every grouping.</p>
+      </div>
+      <figure class="story__fig">
+        <div class="panel" id="compand">
           <div class="fig-head">
-            <div><p class="fig-title">Where the 15 levels sit, and which codes get used</p><p class="fig-sub">Values divided by the largest one, one 4-bit scale for the whole matrix</p></div>
+            <p class="fig-sub">Values ÷ the largest one; one 4-bit scale for the matrix</p>
             <div class="seg" role="group" aria-label="Quantizer">
               <button type="button" data-mode="uni" aria-pressed="true">Even levels</button>
               <button type="button" data-mode="mu" aria-pressed="false">μ-law levels</button>
             </div>
           </div>
-          <div class="cp-grid">
-            <div class="card cp-card"><div class="chart"><svg id="cpSvg" viewBox="0 0 600 372" role="img" aria-label="Histogram of momentum values with the positions of the 4-bit levels, and the share of values assigned to each 4-bit code."></svg></div></div>
-            <div class="cp-side">
-              <div class="cp-stats" aria-live="polite">
-                <div class="cp-stat"><span class="k">Values rounded to zero</span><span class="v" id="cpZero">67%</span><span class="o" id="cpZeroO"></span></div>
-                <div class="cp-stat"><span class="k">Codes holding ≥ 1% of values</span><span class="v" id="cpUsed">3</span><span class="o" id="cpUsedO"></span></div>
-                <div class="cp-stat"><span class="k">Relative error</span><span class="v" id="cpRE">0.49</span><span class="o" id="cpREO"></span></div>
-                <div class="cp-stat"><span class="k">Cosine similarity</span><span class="v" id="cpCS">0.89</span><span class="o" id="cpCSO"></span></div>
-              </div>
-              <div class="tbl-wrap">
-                <table class="t">
-                  <caption>A real layer (Table 1): even levels → μ-law</caption>
-                  <thead><tr><th>Scale per</th><th>Rel. error</th><th>Cosine</th></tr></thead>
-                  <tbody>
-                    <tr><th scope="row">Tensor</th><td>0.509 → <b>0.238</b></td><td>0.879 → <b>0.973</b></td></tr>
-                    <tr><th scope="row">Row</th><td>0.127 → <b>0.111</b></td><td>0.992 → <b>0.994</b></td></tr>
-                    <tr><th scope="row">Column</th><td>0.254 → <b>0.159</b></td><td>0.969 → <b>0.988</b></td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
+          <div class="chart"><svg id="cpSvg" viewBox="0 0 600 372" role="img" aria-label="Histogram of momentum values with the positions of the 4-bit levels, and the share of values assigned to each 4-bit code."></svg></div>
+          <div class="cp-stats" aria-live="polite">
+            <div class="cp-stat"><span class="k">Rounded to zero</span><span class="v" id="cpZero">67%</span><span class="o" id="cpZeroO"></span></div>
+            <div class="cp-stat"><span class="k">Codes with ≥ 1%</span><span class="v" id="cpUsed">3</span><span class="o" id="cpUsedO"></span></div>
+            <div class="cp-stat"><span class="k">Relative error</span><span class="v" id="cpRE">0.49</span><span class="o" id="cpREO"></span></div>
+            <div class="cp-stat"><span class="k">Cosine</span><span class="v" id="cpCS">0.89</span><span class="o" id="cpCSO"></span></div>
           </div>
-        </figure>
-        <p class="fig-cap">The histogram is a synthetic 512 × 512 momentum with heavy tails (Student-t, 6 degrees of freedom), scaled to unit Frobenius norm as in MuonQ; its numbers land close to the real layer, <code>layers.0.self_attn.k_proj</code>, in Table 1. μ-law helps at every grouping.</p>
-      </li>
-    </ol>
+        </div>
+        <figcaption class="fig-cap">A synthetic 512 × 512 momentum with heavy tails (Student-t, 6 degrees of freedom), scaled to unit norm as in MuonQ; its numbers land close to the real layer.</figcaption>
+      </figure>
+    </div>
 
-    <details class="more" style="margin-top:clamp(30px, 4vw, 44px)">
+    <details class="more more--after">
       <summary>Algorithm 1: one full MuonQ step</summary>
-      <div class="card algo" id="algo" role="group" aria-label="Algorithm 1, simplified">
+      <div class="panel algo" id="algo" role="group" aria-label="Algorithm 1, simplified">
         <p class="algo__in"><b>Input:</b> gradient <span class="m">G<sub>t</sub></span>, learning rate <span class="m">η</span>, momentum <span class="m">β</span>, rank <span class="m">k</span>, weights <span class="m">W<sub>t−1</sub></span>, and the 4-bit state <span class="m">(<span class="acc h">U</span>, <span class="acc h">S</span>, <span class="acc h">R</span>)</span> written by the previous step.</p>
         <div class="ln" data-ph="0"><span class="n">1</span><span><span class="kw">read</span>&nbsp; <i><span class="acc h">M</span></i><sub>t−1</sub> ← <i><span class="acc h">U</span> <span class="acc h">S</span></i> + <i><span class="acc h">R</span></i><span class="cm">dequantize; zero at t = 1</span></span></div>
-        <div class="ph-h" data-ph="1"><a href="#step-norm"><span class="pn">1</span><span>Normalize</span></a></div>
+        <div class="ph-h" data-ph="1"><a href="#step-n"><span class="pn">N</span><span>Normalize</span></a></div>
         <div class="ln" data-ph="1"><span class="n">2</span><span><i>M</i><sub>t</sub> ← <i>β <span class="acc h">M</span></i><sub>t−1</sub> + <i>G</i><sub>t</sub> / ‖<i>G</i><sub>t</sub>‖<sub>F</sub></span></div>
         <div class="ln" data-ph="1"><span class="n">3</span><span><i><span class="acc b">M</span></i><sub>t</sub> ← <i>M</i><sub>t</sub> / ‖<i>M</i><sub>t</sub>‖<sub>F</sub><span class="cm">unit-norm momentum</span></span></div>
-        <div class="ph-h" data-ph="2"><a href="#step-decomp"><span class="pn">2</span><span>Split off the top-<i>k</i> directions</span></a></div>
+        <div class="ph-h" data-ph="2"><a href="#step-d"><span class="pn">D</span><span>Split off the top-<i>k</i> directions</span></a></div>
         <div class="ln" data-ph="2"><span class="n">4</span><span><i>V</i> ← <span class="fn">RowNorm</span>(<i><span class="acc h">S</span></i>);&nbsp; <i>U</i><sub>t</sub> ← <span class="fn">orth</span>(<i><span class="acc b">M</span></i><sub>t</sub> <i>V</i><sup>⊤</sup>)<span class="cm">one warm-started power step</span></span></div>
         <div class="ln" data-ph="2"><span class="n">5</span><span><i>S</i><sub>t</sub> ← <i>U</i><sub>t</sub><sup>⊤</sup> <i><span class="acc b">M</span></i><sub>t</sub>;&nbsp; <i>R</i><sub>t</sub> ← <i><span class="acc b">M</span></i><sub>t</sub> − <i>U</i><sub>t</sub><i>S</i><sub>t</sub></span></div>
-        <div class="ph-h" data-ph="3"><a href="#step-compand"><span class="pn">3</span><span>Compand and store in 4 bits</span></a></div>
+        <div class="ph-h" data-ph="3"><a href="#step-c"><span class="pn">C</span><span>Compand and store in 4 bits</span></a></div>
         <div class="ln" data-ph="3"><span class="n">6</span><span><span class="kw">store</span>&nbsp; <span class="fn">CQuant</span>(<i>U</i><sub>t</sub>) per column, <span class="fn">CQuant</span>(<i>S</i><sub>t</sub>) per row, <span class="fn">CQuant</span>(<i>R</i><sub>t</sub>) per tensor</span></div>
         <div class="ph-h" data-ph="4"><span class="pn u">→</span>Update the weights, as in Muon</div>
         <div class="ln" data-ph="4"><span class="n">7</span><span><i>W</i><sub>t</sub> ← <i>W</i><sub>t−1</sub> − <i>η</i> · <span class="fn">polar</span>(<i><span class="acc b">M</span></i><sub>t</sub>)</span></div>
@@ -713,69 +833,101 @@ svg .hit { fill: transparent; cursor: crosshair; }
 
 <section class="section" id="results" aria-labelledby="res-h">
   <div class="wrap">
-    <div class="section__head prose">
+    <div class="sec-head">
       <h2 class="section__title" id="res-h">Results</h2>
-      <p>GPT-2 Medium and Large and LLaMA-350M and 1.1B are pre-trained on FineWeb (5 to 13.1 billion tokens) with the standard Muon recipe on A100 GPUs. <b>Muon32</b> is full precision, <b>Muon8</b> and <b>Muon4</b> store the momentum with plain 8- and 4-bit quantization, and <b>MuonQ4</b> is MuonQ.</p>
+      <p class="lede">GPT-2 Medium and Large and LLaMA-350M and 1.1B, pre-trained on FineWeb (5–13.1B tokens) with the standard Muon recipe. <b>Muon32</b> is full precision, <b>Muon8</b> and <b>Muon4</b> plain 8- and 4-bit storage, <b>MuonQ4</b> is MuonQ.</p>
     </div>
-    <ul class="kv" aria-label="Key numbers">
-      <li><span class="k">4.50 <svg viewBox="0 0 16 11" aria-hidden="true"><path d="M1 5.5h12M9 1.5l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> 0.62 GB</span><span class="v">optimizer state of LLaMA-1.1B: 7.28× less than full-precision Muon, with every stored factor in 4 bits</span></li>
-      <li><span class="k">23.18 <svg viewBox="0 0 16 11" aria-hidden="true"><path d="M1 5.5h12M9 1.5l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> 12.67</span><span class="v">LLaMA-1.1B validation perplexity, plain 4-bit Muon → MuonQ4; 8-bit Muon reaches 12.42 and full precision 11.47</span></li>
-      <li><span class="k">≈ 1 point</span><span class="v">of average zero-shot accuracy behind full-precision Muon, over seven tasks and four models</span></li>
-    </ul>
 
-    <figure class="bench" id="qm" style="margin-top:22px">
-      <div class="ctl-row" style="margin-bottom:16px">
-        <div class="ctl"><span class="ctl-label" id="qm-l">Model</span>
-          <div class="seg" role="group" aria-labelledby="qm-l">
-            <button type="button" data-m="gpt2m" aria-pressed="false">GPT-2 Medium</button>
-            <button type="button" data-m="gpt2l" aria-pressed="false">GPT-2 Large</button>
-            <button type="button" data-m="llama350" aria-pressed="false">LLaMA-350M</button>
-            <button type="button" data-m="llama11" aria-pressed="true">LLaMA-1.1B</button>
-          </div></div>
+    <div class="story" id="r-mem">
+      <div class="story__text">
+        <span class="kicker">Memory and quality</span>
+        <h3 class="story__title">4-bit memory, close to 8-bit quality</h3>
+        <div class="bigs">
+          <div class="big"><span class="big__v">7.28<small>×</small></span><span class="big__l">less optimizer-state memory than Muon32 on LLaMA-1.1B, 4.50 → 0.62 GB</span></div>
+          <div class="big"><span class="big__v"><span class="from">23.18</span><span class="arr">→</span><span class="to">12.67</span></span><span class="big__l">LLaMA-1.1B validation perplexity, plain 4-bit → MuonQ4; Muon8 reaches 12.42, Muon32 11.47</span></div>
+          <div class="big"><span class="big__v">90<small>%</small></span><span class="big__l">of the perplexity gap between Muon4 and Muon32 closed on LLaMA-1.1B</span></div>
+        </div>
       </div>
-      <div class="qm-grid">
-        <div class="card chart-card"><h4>Validation perplexity</h4><p class="sub-l">lower is better</p><div class="plot" id="qmPPL"></div></div>
-        <div class="card chart-card"><h4>Optimizer-state memory, GB</h4><p class="sub-l">lower is better</p><div class="plot" id="qmMem"></div></div>
-      </div>
-    </figure>
-    <p class="note" style="margin-top:10px"><span id="qmSum" aria-live="polite"></span> Values from Fig. 6 of the paper; Table 3 lists the LLaMA-1.1B memory as 4.50, 1.13, 0.56 and 0.62 GB, and the ratios agree.</p>
+      <figure class="story__fig">
+        <div class="panel" id="scatter">
+          <div class="fig-head">
+            <p class="fig-title">Perplexity against optimizer memory <span>lower left is better</span></p>
+            <div class="seg" role="group" aria-label="Model">
+              <button type="button" data-m="gpt2m" aria-pressed="false">GPT-2 M</button>
+              <button type="button" data-m="gpt2l" aria-pressed="false">GPT-2 L</button>
+              <button type="button" data-m="llama350" aria-pressed="false">LLaMA-350M</button>
+              <button type="button" data-m="llama11" aria-pressed="true">LLaMA-1.1B</button>
+            </div>
+          </div>
+          <div class="chart"><svg id="scSvg" viewBox="0 0 600 340" role="img" aria-label="Validation perplexity against optimizer-state memory for Muon32, Muon8, Muon4 and MuonQ4."></svg></div>
+        </div>
+        <figcaption class="fig-cap" id="scCap">LLaMA-1.1B from Table 3 of the paper (with GRASP, which keeps part of its state in 8 bits); the other models read from Fig. 6.</figcaption>
+      </figure>
+    </div>
 
-    <details class="more" style="margin-top:18px">
+    <div class="story story--flip" id="curves">
+      <div class="story__text">
+        <span class="kicker">Training</span>
+        <h3 class="story__title">Tracks full precision from the first steps</h3>
+        <p>MuonQ4 follows Muon32 and stays close to Muon8, which uses twice the bits. Plain Muon4 never closes its gap, and the gap grows with model size.</p>
+        <div class="seg" role="group" aria-label="Model">
+          <button type="button" data-i="0" aria-pressed="false">GPT-2 Medium</button>
+          <button type="button" data-i="1" aria-pressed="false">LLaMA-350M</button>
+          <button type="button" data-i="2" aria-pressed="true">LLaMA-1.1B</button>
+        </div>
+        <p class="note">Fig. 5 of the paper, in the paper's colors (Muon4 yellow, MuonQ4 red dashed). Click the plot to enlarge it.</p>
+      </div>
+      <figure class="story__fig">
+        <div class="fig-img tabs-img">
+          <img width="1600" height="1178" class="zoom off" src="static/images/gpt2m_curve.png" alt="GPT-2 Medium training loss over 5B tokens: MuonQ4 tracks Muon32 and Muon8; Muon4 stays far above." loading="lazy">
+          <img width="1600" height="1178" class="zoom off" src="static/images/llama_350m_curve.png" alt="LLaMA-350M training loss: MuonQ4 tracks Muon32 and Muon8; Muon4 stays above." loading="lazy">
+          <img width="1600" height="1178" class="zoom" src="static/images/llama_1_1b_curve.png" alt="LLaMA-1.1B training loss over 13B tokens: MuonQ4 tracks Muon32 and Muon8; Muon4 stays far above." loading="lazy">
+        </div>
+      </figure>
+    </div>
+
+    <div class="story" id="r-zs">
+      <div class="story__text">
+        <span class="kicker">Downstream</span>
+        <h3 class="story__title">About one point behind full precision</h3>
+        <div class="big"><span class="big__v">≈ 1<small>pt</small></span><span class="big__l">average zero-shot accuracy behind Muon32 over seven tasks and four models</span></div>
+        <p>MuonQ4 recovers 71–88% of what plain 4-bit storage loses. Tasks: ARC-c, ARC-e, OBQA, BoolQ, HellaSwag, PIQA and WinoGrande.</p>
+      </div>
+      <figure class="story__fig">
+        <div class="panel">
+          <ul class="legend" aria-label="Legend"><li><span class="sw dot k-naive"></span>Muon4</li><li><span class="sw dot k-q"></span>MuonQ4</li><li><span class="sw dot k-fp"></span>Muon32</li></ul>
+          <div class="chart"><svg id="zsSvg" viewBox="0 0 640 236" role="img" aria-label="Average zero-shot accuracy for four models. MuonQ4 sits close to Muon32 and well above Muon4 in every model."></svg></div>
+        </div>
+        <figcaption class="fig-cap">Average zero-shot accuracy (Table 2). The right column is the share of the Muon4 → Muon32 gap that MuonQ4 closes.</figcaption>
+      </figure>
+    </div>
+
+    <div class="story story--flip" id="wf">
+      <div class="story__text">
+        <span class="kicker">Ablation</span>
+        <h3 class="story__title">Each change earns its place</h3>
+        <div class="big"><span class="big__v"><span class="from">69.9</span><span class="arr">→</span><span class="to">40.9</span></span><span class="big__l">GPT-2 Small perplexity, plain 4-bit → all three changes; Muon32 reaches 36.4</span></div>
+        <p>Decomposition gives the largest single gain and costs 3.8 MB of extra state; normalization and companding cost nothing.</p>
+        <div class="seg" role="group" aria-label="Ablation view">
+          <button type="button" data-v="stack" aria-pressed="true">Added one by one</button>
+          <button type="button" data-v="alone" aria-pressed="false">Each on its own</button>
+        </div>
+      </div>
+      <figure class="story__fig">
+        <div class="panel">
+          <div id="wfRows"></div>
+          <ul class="legend" aria-label="Legend"><li><span class="sw k-naive"></span>Plain 4-bit</li><li><span class="sw k-8"></span>Partial</li><li><span class="sw k-q"></span>MuonQ4</li><li><span class="sw gone"></span>Perplexity removed</li><li><span class="sw ref"></span>Muon32</li></ul>
+        </div>
+        <figcaption class="fig-cap">GPT-2 Small, 1B tokens (Table 4). The right column is the optimizer state.</figcaption>
+      </figure>
+    </div>
+
+    <details class="more more--after">
       <summary>More results</summary>
       <div class="more-body">
-        <div class="res-block" id="curves">
-          <h3 class="more-h">Training loss</h3>
-          <div class="grid2 curves">
-            <div class="fig-img tabs-img">
-              <img width="1600" height="1178" class="zoom off" src="static/images/gpt2m_curve.png" alt="GPT-2 Medium training loss over 5B tokens: MuonQ4 tracks Muon32 and Muon8; Muon4 stays far above." loading="lazy">
-              <img width="1600" height="1178" class="zoom off" src="static/images/llama_350m_curve.png" alt="LLaMA-350M training loss: MuonQ4 tracks Muon32 and Muon8; Muon4 stays above." loading="lazy">
-              <img width="1600" height="1178" class="zoom" src="static/images/llama_1_1b_curve.png" alt="LLaMA-1.1B training loss over 13B tokens: MuonQ4 tracks Muon32 and Muon8; Muon4 stays far above." loading="lazy">
-            </div>
-            <div class="curves-text">
-              <div class="seg" role="group" aria-label="Model">
-                <button type="button" data-i="0" aria-pressed="false">GPT-2 Medium</button>
-                <button type="button" data-i="1" aria-pressed="false">LLaMA-350M</button>
-                <button type="button" data-i="2" aria-pressed="true">LLaMA-1.1B</button>
-              </div>
-              <p class="more-p">MuonQ4 follows Muon32 from the first steps and closely tracks Muon8, which uses twice as many bits per value. Plain Muon4 never closes its gap, and the gap grows with model size.</p>
-              <p class="note">Fig. 5 of the paper, in the paper's colors. Click the plot to enlarge it.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="res-block">
-          <h3 class="more-h">Zero-shot accuracy</h3>
-          <p class="more-p">Average over ARC-c, ARC-e, OBQA, BoolQ, HellaSwag, PIQA and WinoGrande (Table 2). MuonQ4 recovers most of what plain 4-bit storage loses; the share of the gap closed is (MuonQ4 − Muon4) / (Muon32 − Muon4).</p>
-          <div class="card chart-card">
-            <ul class="legend" aria-label="Legend"><li><span class="sw dot k-naive"></span>Muon4 (plain 4-bit)</li><li><span class="sw dot k-q"></span>MuonQ4</li><li><span class="sw dot k-fp"></span>Muon32 (full precision)</li></ul>
-            <div class="plot chart"><svg id="zsSvg" viewBox="0 0 640 236" role="img" aria-label="Average zero-shot accuracy for four models. MuonQ4 sits close to Muon32 and well above Muon4 in every model."></svg></div>
-          </div>
-          <div class="tbl-wrap" id="zsTable"></div>
-        </div>
-
         <div class="res-block">
           <h3 class="more-h">Against GRASP on LLaMA-1.1B</h3>
-          <p class="more-p">GRASP keeps part of its state in 8 bits. Under identical training settings, pure 4-bit MuonQ4 saves more memory (7.28× against 6.02×) at a perplexity 0.34 higher; both add about 10% to the step time (Table 3).</p>
+          <p class="more-p">GRASP keeps part of its state in 8 bits. Under identical settings, pure 4-bit MuonQ4 saves more memory (7.28× against 6.02×) at a perplexity 0.34 higher; both add about 10% to the step time (Table 3).</p>
           <div class="tbl-wrap">
             <table class="t">
               <thead><tr><th>Method</th><th>Val. PPL ↓</th><th>Opt. memory</th><th>Reduction</th><th>Step time</th><th>Overhead</th></tr></thead>
@@ -789,26 +941,11 @@ svg .hit { fill: transparent; cursor: crosshair; }
             </table>
           </div>
         </div>
-
-        <div class="res-block" id="wf">
-          <h3 class="more-h">What each change adds</h3>
-          <p class="more-p">GPT-2 Small, 1B tokens (Table 4). Plain 4-bit Muon reaches 69.9 perplexity and full precision 36.4; MuonQ4 with all three changes reaches 40.9.</p>
-          <div class="card chart-card">
-            <div class="seg" role="group" aria-label="Ablation view" style="justify-self:start;margin-bottom:6px">
-              <button type="button" data-v="stack" aria-pressed="true">Added one by one</button>
-              <button type="button" data-v="alone" aria-pressed="false">Each on its own</button>
-            </div>
-            <div id="wfRows"></div>
-            <ul class="legend" aria-label="Legend"><li><span class="sw k-naive"></span>Plain 4-bit</li><li><span class="sw k-8"></span>Partial MuonQ</li><li><span class="sw k-q"></span>Full MuonQ4</li><li><span class="sw gone"></span>Perplexity removed</li><li><span class="sw ref"></span>Muon32, full precision</li></ul>
-          </div>
-          <p class="note">Optimizer state: 40.5 MB for plain 4-bit, 44.3 MB once the decomposition adds its factors, 324.0 MB in full precision.</p>
-        </div>
-
         <div class="res-block">
           <h3 class="more-h">How many directions to split off</h3>
-          <p class="more-p">MuonQ4 on GPT-2 Small with truncation rank <span class="m">k</span> as a fraction of min<span class="u">(</span>m, n<span class="u">)</span>. Perplexity falls quickly up to 1/16 and then flattens while memory keeps rising, so 1/16 is the default (+9.4% memory over plain 4-bit).</p>
-          <div class="grid2">
-            <div class="card chart-card"><div class="plot chart"><svg id="rkSvg" viewBox="0 0 520 290" role="img" aria-label="Perplexity against optimizer memory as the truncation rank grows from 0 to one half: perplexity drops quickly up to one sixteenth, then flattens while memory keeps rising."></svg></div></div>
+          <p class="more-p">MuonQ4 on GPT-2 Small with truncation rank <span class="m">k</span> as a fraction of min<span class="u">(</span>m, n<span class="u">)</span>. Perplexity falls quickly up to 1/16, then flattens while memory keeps rising, so 1/16 is the default.</p>
+          <div class="grid2 rank">
+            <div class="panel"><div class="chart"><svg id="rkSvg" viewBox="0 0 520 290" role="img" aria-label="Perplexity against optimizer memory as the truncation rank grows from 0 to one half: perplexity drops quickly up to one sixteenth, then flattens while memory keeps rising."></svg></div></div>
             <div class="tbl-wrap">
               <table class="t">
                 <thead><tr><th>Rank</th><th>PPL ↓</th><th>Memory</th></tr></thead>
@@ -826,6 +963,10 @@ svg .hit { fill: transparent; cursor: crosshair; }
           </div>
           <p class="note">Tables 4 and 9 of the paper; rows marked ≈ are read off Fig. 7.</p>
         </div>
+        <div class="res-block">
+          <h3 class="more-h">Zero-shot accuracy, all seven tasks</h3>
+          <div class="tbl-wrap" id="zsTable"></div>
+        </div>
       </div>
     </details>
   </div>
@@ -833,9 +974,9 @@ svg .hit { fill: transparent; cursor: crosshair; }
 
 <section class="section" id="code" aria-labelledby="code-h">
   <div class="wrap">
-    <div class="section__head prose">
+    <div class="sec-head">
       <h2 class="section__title" id="code-h">Code</h2>
-      <p>The repository has the optimizer, Hydra configs for the GPT-2 and LLaMA models in the paper, and the FineWeb preprocessing script.</p>
+      <p class="lede">The repository has the optimizer, Hydra configs for the GPT-2 and LLaMA models in the paper, and the FineWeb preprocessing script.</p>
     </div>
     <div class="code-grid">
       <div>
@@ -860,9 +1001,9 @@ args:
   ns_steps: 5
   qbit: 4                <span class="c"># 4-bit state</span>
   gran: tensor           <span class="c"># residual R: one scale</span>
-  <span class="f">compand: True</span>          <span class="c"># step 3, μ-law</span>
-  <span class="f">norm: True</span>             <span class="c"># step 1, unit norm</span>
-  <span class="f">rank: 16</span>               <span class="c"># step 2, k = min(m, n) / 16</span></code></pre>
+  <span class="f">compand: True</span>          <span class="c"># C, μ-law</span>
+  <span class="f">norm: True</span>             <span class="c"># N, unit norm</span>
+  <span class="f">rank: 16</span>               <span class="c"># D, k = min(m, n) / 16</span></code></pre>
       </div>
     </div>
   </div>
@@ -1172,7 +1313,7 @@ const MuonQ = { init: function () {
     var host = svg.parentNode, lastW = 0;
     function run(force) {
       var W = Math.round(host.getBoundingClientRect().width);
-      if (!W || (!force && Math.abs(W - lastW) < 2)) return;
+      if (W < 120 || (!force && Math.abs(W - lastW) < 2)) return;  // not laid out yet: the observer draws it later
       lastW = W;
       while (svg.firstChild) svg.removeChild(svg.firstChild);
       var H = layout(W);
@@ -1217,6 +1358,28 @@ const MuonQ = { init: function () {
   function hideTip() { if (tip) tip.classList.remove('on'); }
   window.addEventListener('scroll', hideTip, { passive: true });
 
+  /* ---------- hero ruler: the 15 levels of a 4-bit code slide from even to mu-law spacing ---------- */
+  (function () {
+    var svg = $('#ruler'); if (!svg || !D) return;
+    var mu = D.comp.res.mu.levels, cx = 190, half = 182;
+    sv('line', { 'class': 'base', x1: cx - half - 6, y1: 24, x2: cx + half + 6, y2: 24 }, svg);
+    var ticks = mu.map(function (v, i) {
+      var k = i - 7;
+      return { t: sv('line', { 'class': 'tk' + (k === 0 ? ' z' : ''), y1: k === 0 ? 3 : 12, y2: 24 }, svg), u: k / 7, v: v };
+    });
+    function set(p) { ticks.forEach(function (o) { var x = (cx + lerp(o.u, o.v, p) * half).toFixed(2); o.t.setAttribute('x1', x); o.t.setAttribute('x2', x); }); }
+    var busy = false;
+    function replay() {
+      if (busy || REDUCE) return;
+      busy = true;
+      tween(600, function (p) { set(1 - p); }, function () { setTimeout(function () { tween(1400, set, function () { busy = false; }); }, 200); });
+    }
+    svg.addEventListener('pointerenter', replay);
+    if (REDUCE) { set(1); return; }
+    set(0);
+    setTimeout(function () { tween(1800, set); }, 700);
+  })();
+
   /* ---------- first screen: Fig. 3 replayed in four steps ---------- */
   (function () {
     var fig = $('#teaser'), svg = $('#tzSvg'); if (!fig || !svg || !D) return;
@@ -1258,7 +1421,7 @@ const MuonQ = { init: function () {
       var xh = sv('line', { 'class': 'xh', y1: T, y2: H - B, opacity: 0 }, svg);
       var dS = sv('circle', { r: 4.5, opacity: 0, style: 'fill:var(--c-fp);stroke:var(--bg-card);stroke-width:2' }, svg);
       var dE = sv('circle', { r: 4.5, opacity: 0, style: 'fill:var(--c-naive);stroke:var(--bg-card);stroke-width:2' }, svg);
-      var hit = sv('rect', { 'class': 'hit', x: L, y: T, width: W - L - R, height: H - T - B }, svg);
+      var hit = sv('rect', { 'class': 'hit', x: L, y: T, width: Math.max(0, W - L - R), height: H - T - B }, svg);
       G = { W: W, H: H, L: L, R: R, T: T, B: B, X: X, Y: Y, zone: zone, brk: brk, zlab: zlab, sigA: sigA, errA: errA, sigL: sigL, errL: errL, xh: xh, dS: dS, dE: dE };
       hit.addEventListener('pointermove', function (evt) {
         var x = localX(svg, evt) * (W / svg.getBoundingClientRect().width);
@@ -1344,10 +1507,10 @@ const MuonQ = { init: function () {
 
     // the kit's stepper: plays while the figure is on screen; Pause / Replay; any step can be picked
     var STEPS = [
-      { k: 'a', label: 'Plain 4-bit copy', short: 'Plain' },
-      { k: 'b', label: 'After the polar step', short: 'Polar' },
-      { k: 'c', label: 'MuonQ 4-bit copy', short: 'MuonQ' },
-      { k: 'd', label: 'After the polar step', short: 'Polar' }
+      { k: 'a', label: 'Plain copy', short: 'Plain' },
+      { k: 'b', label: 'After polar', short: 'Polar' },
+      { k: 'c', label: 'MuonQ copy', short: 'MuonQ' },
+      { k: 'd', label: 'After polar', short: 'Polar' }
     ];
     var DUR = 5.2, HOLD = 1.2, TOTAL = STEPS.length * DUR + HOLD;
     var stepsEl = $('#tz-steps'), btnPlay = $('#tz-play'), btnReplay = $('#tz-replay');
@@ -1464,7 +1627,7 @@ const MuonQ = { init: function () {
         g.dwo = sv('circle', { r: 4.5, 'class': 'dr-dot-wo' }, svg);
         g.tw = sv('text', { 'class': 'vl' }, svg);
         g.two = sv('text', { 'class': 'vl' }, svg);
-        var hit = sv('rect', { 'class': 'hit', x: L, y: T, width: W - L - R, height: H - T - B }, svg);
+        var hit = sv('rect', { 'class': 'hit', x: L, y: T, width: Math.max(0, W - L - R), height: H - T - B }, svg);
         hit.addEventListener('pointermove', function (evt) {
           var x = localX(svg, evt) * (W / svg.getBoundingClientRect().width);
           var s = clamp(Math.round(1 + (x - L) / (W - L - R) * 49), 1, Math.max(1, Math.floor(n)));
@@ -1714,61 +1877,90 @@ const MuonQ = { init: function () {
     });
   })();
 
-  /* ---------- results: perplexity and memory (Fig. 6) ---------- */
+  /* ---------- results: perplexity against optimizer memory (Table 3 / Fig. 6) ---------- */
   (function () {
-    var fig = $('#qm'); if (!fig) return;
+    var fig = $('#scatter'), svg = $('#scSvg'); if (!fig || !svg) return;
     var MODELS = {
-      gpt2m: { n: 'GPT-2 Medium', ppl: [23.8, 24.7, 49.6, 26.9], mem: [1.15, 0.29, 0.14, 0.16] },
-      gpt2l: { n: 'GPT-2 Large', ppl: [19.3, 20.4, 42.7, 22.2], mem: [2.70, 0.68, 0.34, 0.37] },
-      llama350: { n: 'LLaMA-350M', ppl: [15.5, 16.3, 33.6, 17.8], mem: [1.54, 0.39, 0.19, 0.21] },
-      llama11: { n: 'LLaMA-1.1B', ppl: [11.5, 12.4, 23.2, 12.7], mem: [4.61, 1.15, 0.58, 0.63] }
+      gpt2m: { n: 'GPT-2 Medium', pts: [['Muon32', 1.15, 23.8], ['Muon8', 0.29, 24.7], ['Muon4', 0.14, 49.6], ['MuonQ4', 0.16, 26.9]] },
+      gpt2l: { n: 'GPT-2 Large', pts: [['Muon32', 2.70, 19.3], ['Muon8', 0.68, 20.4], ['Muon4', 0.34, 42.7], ['MuonQ4', 0.37, 22.2]] },
+      llama350: { n: 'LLaMA-350M', pts: [['Muon32', 1.54, 15.5], ['Muon8', 0.39, 16.3], ['Muon4', 0.19, 33.6], ['MuonQ4', 0.21, 17.8]] },
+      llama11: { n: 'LLaMA-1.1B', exact: true, pts: [['Muon32', 4.50, 11.47], ['Muon8', 1.13, 12.42], ['Muon4', 0.56, 23.18], ['GRASP 8/4', 0.75, 12.33], ['MuonQ4', 0.62, 12.67]] }
     };
-    var METH = [{ n: 'Muon32', c: 'bg-fp', k: 'k-fp' }, { n: 'Muon8', c: 'bg-8', k: 'k-8' }, { n: 'Muon4', c: 'bg-naive', k: 'k-naive' }, { n: 'MuonQ4', c: 'bg-q', k: 'k-q' }];
-    var FULL = 80;
-    function build(box, max, ticks, fmt, unit) {
-      var rows = METH.map(function (m, i) {
-        var row = hx('div', 'qbar' + (i === 3 ? ' is-q' : ''), box);
-        var lab = hx('span', 'lab', row); hx('span', 'key key--box ' + m.k, lab); lab.appendChild(doc.createTextNode(m.n));
-        var tr = hx('div', 'track', row);
-        return { bar: hx('span', 'bar ' + m.c, tr), val: hx('span', 'val', tr), m: m };
+    var CLS = { 'Muon32': 'fp', 'Muon8': '8', 'Muon4': 'naive', 'MuonQ4': 'q', 'GRASP 8/4': 'grasp' };
+    var cur = 'llama11';
+    function fmtP(v, ex) { return ex ? v.toFixed(2) : v.toFixed(1); }
+    function layout(W) {
+      var m = MODELS[cur], narrow = W < 480;
+      var H = Math.round(clamp(W * 0.6, 250, 340)), L = 44, R = narrow ? 14 : 24, T = 18, B = 44;
+      var xs = m.pts.map(function (p) { return p[1]; }), ys = m.pts.map(function (p) { return p[2]; });
+      var x0 = Math.log10(Math.min.apply(null, xs) / 1.6), x1 = Math.log10(Math.max.apply(null, xs) * 1.5);
+      var yMin = Math.min.apply(null, ys), yMax = Math.max.apply(null, ys), pad = (yMax - yMin) * 0.12;
+      var y0 = Math.max(0, yMin - pad * 1.6), y1 = yMax + pad;
+      var X = function (v) { return L + (Math.log10(v) - x0) / (x1 - x0) * (W - L - R); };
+      var Y = function (v) { return T + (y1 - v) / (y1 - y0) * (H - T - B); };
+      // grid and axes
+      var step = (y1 - y0) > 24 ? 10 : (y1 - y0) > 9 ? 4 : 2;
+      for (var g = Math.ceil(y0 / step) * step; g <= y1; g += step) {
+        sv('line', { 'class': 'gl', x1: L, x2: W - R, y1: Y(g), y2: Y(g) }, svg);
+        txt(svg, L - 8, Y(g) + 4, String(g), 'tl', 'end');
+      }
+      [0.1, 0.2, 0.5, 1, 2, 5].forEach(function (v) {
+        if (Math.log10(v) < x0 || Math.log10(v) > x1) return;
+        sv('line', { 'class': 'ax', x1: X(v), x2: X(v), y1: H - B, y2: H - B + 4 }, svg);
+        txt(svg, X(v), H - B + 17, v + ' GB', 'tl', 'middle');
       });
-      var ax = hx('div', 'qm-axis', box);
-      var ln = hx('span', 'qm-line', ax); ln.style.width = (ticks[ticks.length - 1] / max * FULL) + '%';
-      ticks.forEach(function (t) { var s = hx('span', 't', ax, String(t)); s.style.left = (t / max * FULL) + '%'; });
-      return { rows: rows, max: max, fmt: fmt, unit: unit };
-    }
-    var P = build($('#qmPPL'), 55, [0, 10, 20, 30, 40, 50], function (v) { return v.toFixed(1); }, 'ppl');
-    var Mm = build($('#qmMem'), 5, [0, 1, 2, 3, 4, 5], function (v) { return v.toFixed(2); }, 'GB');
-    var cur = 'llama11', sum = $('#qmSum');
-    function summary(m) {
-      var ratio = m.mem[0] / m.mem[3];
-      sum.replaceChildren();
-      hx('b', null, sum, m.n + ': ');
-      sum.appendChild(doc.createTextNode('MuonQ4 reaches ' + m.ppl[3].toFixed(1) + ' perplexity, against ' + m.ppl[2].toFixed(1) + ' for plain Muon4 and ' + m.ppl[0].toFixed(1) + ' for full precision, with ' + ratio.toFixed(1) + '× less optimizer memory than Muon32.'));
-    }
-    function fill(G, vals, model, grow) {
-      G.rows.forEach(function (r, i) {
-        if (grow) r.bar.style.width = (vals[i] / G.max * FULL) + '%';
-        r.val.textContent = G.fmt(vals[i]);
-        r.bar.onpointermove = function (evt) { showTip(evt, r.m.n + ' · ' + model, [{ key: r.m.k, v: G.fmt(vals[i]) + (G.unit === 'GB' ? ' GB' : ''), l: G.unit === 'GB' ? 'optimizer memory' : 'validation perplexity' }]); };
-        r.bar.onpointerleave = hideTip;
+      sv('line', { 'class': 'ax', x1: L, x2: W - R, y1: H - B, y2: H - B }, svg);
+      txt(svg, W - R, H - 6, 'optimizer-state memory (log scale) →', 'tl', 'end');
+      txt(svg, L, T - 6, '↓ validation perplexity', 'tl', 'start');
+      // full precision reference
+      var fp = m.pts[0];
+      sv('line', { 'class': 'sc-ref', x1: L, x2: W - R, y1: Y(fp[2]), y2: Y(fp[2]) }, svg);
+      // the step from plain 4-bit to MuonQ4
+      var p4 = m.pts.filter(function (p) { return p[0] === 'Muon4'; })[0], pq = m.pts.filter(function (p) { return p[0] === 'MuonQ4'; })[0];
+      var ax0 = X(p4[1]), ay0 = Y(p4[2]) + 10, ax1 = X(pq[1]), ay1 = Y(pq[2]) - 12;
+      sv('path', { 'class': 'sc-arrow', d: 'M' + ax0.toFixed(1) + ' ' + ay0.toFixed(1) + 'L' + ax1.toFixed(1) + ' ' + ay1.toFixed(1), 'marker-end': 'url(#scHead)' }, svg);
+      var defs = sv('defs', null, svg), mk = sv('marker', { id: 'scHead', viewBox: '0 0 10 10', refX: 8, refY: 5, markerWidth: 7, markerHeight: 7, orient: 'auto-start-reverse' }, defs);
+      sv('path', { d: 'M0 0L10 5L0 10z', 'class': 'sc-head' }, mk);
+      var dl = p4[2] - pq[2];
+      txt(svg, (ax0 + ax1) / 2 + 10, (ay0 + ay1) / 2, '−' + fmtP(dl, m.exact) + ' PPL', 'sc-gain', 'start');
+      // points, then labels placed where they do not collide with other labels or points
+      var boxes = m.pts.map(function (p) { var x = X(p[1]), y = Y(p[2]); return [x - 9, y - 9, x + 9, y + 9]; });
+      boxes.push([Math.min(ax0, ax1) + 6, Math.min(ay0, ay1), Math.max(ax0, ax1) + 70, Math.max(ay0, ay1)]);
+      boxes.push([L, Y(fp[2]) - 2, W - R, Y(fp[2]) + 2]);
+      function free(b) { return b[0] >= 2 && b[2] <= W - 2 && b[1] >= T - 4 && b[3] <= H - B + 2 && !boxes.some(function (o) { return b[0] < o[2] && b[2] > o[0] && b[1] < o[3] && b[3] > o[1]; }); }
+      m.pts.forEach(function (p) {
+        var c = CLS[p[0]], x = X(p[1]), y = Y(p[2]), q = c === 'q';
+        sv('circle', { 'class': 'sc-dot sc-' + c, cx: x, cy: y, r: q ? 8 : 6 }, svg);
       });
+      m.pts.forEach(function (p) {
+        var c = CLS[p[0]], x = X(p[1]), y = Y(p[2]), q = c === 'q', label = p[0] + (q ? ' (ours)' : '');
+        var w = label.length * (q ? 7.4 : 6.8), h = 14;
+        var cand = [[12, 4, 'start'], [-12, 4, 'end'], [0, -14, 'middle'], [0, 22, 'middle'], [10, -12, 'start'], [-10, -12, 'end'], [10, 20, 'start'], [-10, 20, 'end']];
+        var pick = cand[0];
+        for (var i = 0; i < cand.length; i++) {
+          var cx = x + cand[i][0], cy = y + cand[i][1], a = cand[i][2];
+          var x0 = a === 'start' ? cx : a === 'end' ? cx - w : cx - w / 2;
+          var b = [x0 - 2, cy - h + 3, x0 + w + 2, cy + 4];
+          if (free(b)) { pick = cand[i]; boxes.push(b); break; }
+        }
+        txt(svg, x + pick[0], y + pick[1], label, q ? 'vl sc-lab-q' : 'tl-ink', pick[2]);
+        var hit = sv('circle', { cx: x, cy: y, r: 16, style: 'fill:transparent' }, svg);
+        hit.addEventListener('pointermove', function (evt) {
+          showTip(evt, p[0] + ' · ' + m.n, [{ key: 'k-' + (c === 'grasp' ? '8' : c), v: fmtP(p[2], m.exact), l: 'validation perplexity' }, { v: p[1].toFixed(2) + ' GB', l: 'optimizer state' }]);
+        });
+        hit.addEventListener('pointerleave', hideTip);
+      });
+      return H;
     }
-    function set(key, grow) {
-      cur = key;
-      var m = MODELS[key];
-      $$('.seg button', fig).forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-m') === key ? 'true' : 'false'); });
-      fill(P, m.ppl, m.n, grow); fill(Mm, m.mem, m.n, grow); summary(m);
-    }
-    $$('.seg button', fig).forEach(function (b) { b.addEventListener('click', function () { set(b.getAttribute('data-m'), true); }); });
-    if (animOnArrival(fig)) {
-      set(cur, false);
-      onceVisible(fig, function () { set(cur, true); }, 0.35);
-    } else {
-      P.rows.concat(Mm.rows).forEach(function (r) { r.bar.style.transition = 'none'; });
-      set(cur, true);
-      requestAnimationFrame(function () { requestAnimationFrame(function () { P.rows.concat(Mm.rows).forEach(function (r) { r.bar.style.transition = ''; }); }); });
-    }
+    var redraw = responsive(svg, layout);
+    var cap = $('#scCap');
+    $$('.seg button', fig).forEach(function (b) {
+      b.addEventListener('click', function () {
+        cur = b.getAttribute('data-m');
+        $$('.seg button', fig).forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        redraw();
+      });
+    });
   })();
 
   /* ---------- results: zero-shot dumbbell (Table 2) ---------- */
@@ -1805,7 +1997,7 @@ const MuonQ = { init: function () {
         txt(svg, X(r.m4), y + 20, r.m4.toFixed(1), 'tl', 'middle');
         txt(svg, X(r.fp), y + 20, r.fp.toFixed(1), 'tl', 'middle');
         txt(svg, W - 4, y + 4, Math.round((r.q - r.m4) / (r.fp - r.m4) * 100) + '%', 'vl', 'end');
-        var hit = sv('rect', { x: L, y: y - 20, width: W - L - R + 10, height: 40, style: 'fill:transparent' }, svg);
+        var hit = sv('rect', { x: L, y: y - 20, width: Math.max(0, W - L - R + 10), height: 40, style: 'fill:transparent' }, svg);
         hit.addEventListener('pointermove', function (evt) {
           showTip(evt, r.n, [{ key: 'k-q', v: r.q.toFixed(1) + '%', l: 'MuonQ4' }, { key: 'k-fp', v: r.fp.toFixed(1) + '%', l: 'Muon32' }, { key: 'k-naive', v: r.m4.toFixed(1) + '%', l: 'Muon4' }]);
         });
